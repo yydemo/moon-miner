@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 月球挖矿图标（原创矢量）/ Moon Miner icon (original vector art) -->
+  <defs>
+    <radialGradient id="m" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#f1efe8"/><stop offset="1" stop-color="#8d8b86"/></radialGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1230"/><stop offset="1" stop-color="#05060f"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <g fill="#fff"><circle cx="90" cy="90" r="4"/><circle cx="400" cy="70" r="3"/><circle cx="300" cy="140" r="2.5"/><circle cx="150" cy="190" r="2"/><circle cx="440" cy="200" r="3"/></g>
+  <circle cx="390" cy="130" r="46" fill="#2f7fd6"/><ellipse cx="375" cy="120" rx="20" ry="13" fill="#3fae5a"/>
+  <circle cx="256" cy="720" r="400" fill="url(#m)"/>
+  <circle cx="150" cy="380" r="22" fill="#77746f" opacity=".5"/><circle cx="380" cy="400" r="30" fill="#77746f" opacity=".5"/>
+  <g transform="translate(256 336) scale(5)">
+    <rect x="-18" y="-9" width="36" height="9" rx="4.5" fill="#2b2d33"/>
+    <g fill="#6b6f78"><circle cx="-13" cy="-4.5" r="2.6"/><circle cx="-6.5" cy="-4.5" r="2.6"/><circle cx="0" cy="-4.5" r="2.6"/><circle cx="6.5" cy="-4.5" r="2.6"/><circle cx="13" cy="-4.5" r="2.6"/></g>
+    <rect x="-15" y="-19" width="28" height="10" rx="2.5" fill="#ffc21a"/>
+    <rect x="-13" y="-30" width="13" height="12" rx="2" fill="#ffcf3d"/>
+    <rect x="-11" y="-28" width="9" height="7" rx="1.5" fill="#8fe0ff"/>
+    <g transform="translate(8 -18) rotate(-12)"><rect x="0" y="-2.5" width="13" height="5" rx="2" fill="#e8a200"/><path d="M13 -4.5 L22 0 L13 4.5Z" fill="#b8bec9"/></g>
+    <circle cx="-3" cy="-37" r="1.6" fill="#ff4d4d"/><path d="M-3 -30 V-36" stroke="#ddd" stroke-width="1"/>
+  </g>
+</svg>

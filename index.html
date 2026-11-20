@@ -5,7 +5,7 @@
 <!-- 移动端视口：禁止缩放，适配刘海屏 / Mobile viewport: no zoom, notch-safe -->
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#05060f">
-<meta name="description" content="月球挖矿 Moon Miner — 发射火箭、登月、驾驶挖掘机采矿的 HTML5 小游戏 / Launch, land on the Moon and mine with a little excavator.">
+<meta name="description" content="月球挖矿 Moon Miner — 按「星链赚大矿」设定：胶囊飞船登月、扫地机式着陆器扫矿、尘盒分格拍照、游戏内模拟 NFT 市场 / Capsule to the Moon, vacuum-style lander, compartment photos, simulated NFT market (Star-chain Earn-Mine setting).">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -22,56 +22,92 @@ html,body{margin:0;height:100%;background:#05060f;overflow:hidden;overscroll-beh
   font-family:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;color:#eef3ff}
 #game{position:fixed;inset:0;width:100%;height:100%;display:block}
 button{font-family:inherit;cursor:pointer}
+.hide{display:none!important}
 /* ===== 顶部 HUD / Top HUD ===== */
 #hud{position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;pointer-events:none;
   padding:calc(env(safe-area-inset-top) + 6px) calc(env(safe-area-inset-right) + 8px) 0 calc(env(safe-area-inset-left) + 8px);z-index:5}
-#stats{font-size:13px;line-height:1.4;background:rgba(0,0,0,.42);padding:6px 9px;border-radius:9px;font-variant-numeric:tabular-nums}
+#stats{font-size:12px;line-height:1.45;background:rgba(0,0,0,.45);padding:6px 9px;border-radius:9px;font-variant-numeric:tabular-nums;max-width:68vw}
 #stats:empty{display:none}
 #stats .ok{color:#7dff9a}#stats .bad{color:#ff7b7b}#stats .warn{color:#ffd166}
-.bar{display:inline-block;width:64px;height:8px;border-radius:4px;background:#ffffff22;vertical-align:middle;overflow:hidden}
+.bar{display:inline-block;width:54px;height:7px;border-radius:4px;background:#ffffff22;vertical-align:middle;overflow:hidden}
 .bar i{display:block;height:100%;background:#7dff9a}
 #topbtns{display:flex;gap:6px;pointer-events:auto;flex-wrap:wrap;justify-content:flex-end}
-.tb{min-width:42px;height:42px;padding:0 10px;border-radius:11px;border:1px solid #ffffff33;background:rgba(0,0,0,.5);color:#fff;font-size:15px;font-weight:600}
-.tb:active{background:#ffffff33}
-.hide{display:none!important}
-/* ===== 触屏按键 / Touch controls ===== */
-#controls{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;z-index:4;
-  padding:0 calc(env(safe-area-inset-right) + 14px) calc(env(safe-area-inset-bottom) + 16px) calc(env(safe-area-inset-left) + 14px)}
-.pad{display:flex;gap:12px;align-items:flex-end}
-.cb{pointer-events:auto;touch-action:none;width:clamp(60px,18vmin,94px);height:clamp(60px,18vmin,94px);border-radius:50%;
-  border:2px solid #ffffff55;background:rgba(255,255,255,.13);color:#fff;font-weight:700;font-size:clamp(18px,5vmin,26px);
+.tb{min-width:40px;height:40px;padding:0 10px;border-radius:11px;border:1px solid #ffffff33;background:rgba(0,0,0,.5);color:#fff;font-size:14px;font-weight:600}
+.tb:active,.tb.down{background:#ffffff33}
+.tb.on{background:rgba(92,255,138,.28);border-color:#7dff9a}
+/* ===== 飞行控件 / Flight controls ===== */
+#flightUI,#mineUI{position:fixed;inset:0;pointer-events:none;z-index:4}
+.cb{pointer-events:auto;touch-action:none;width:clamp(56px,16vmin,84px);height:clamp(56px,16vmin,84px);border-radius:50%;
+  border:2px solid #ffffff55;background:rgba(255,255,255,.13);color:#fff;font-weight:700;font-size:clamp(17px,4.6vmin,24px);
   display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
-.cb small{font-size:clamp(10px,2.8vmin,13px);font-weight:500;opacity:.9}
+.cb small{font-size:clamp(10px,2.6vmin,12px);font-weight:500;opacity:.9}
 .cb.down{background:rgba(255,190,70,.5);border-color:#ffd166}
-.cb.big{width:clamp(78px,24vmin,120px);height:clamp(78px,24vmin,120px)}
-.cb.flash{animation:flash .5s infinite alternate;border-color:#ffd166}
-@keyframes flash{from{background:rgba(255,120,40,.25)}to{background:rgba(255,200,60,.75)}}
+.cb.big{width:clamp(74px,22vmin,108px);height:clamp(74px,22vmin,108px)}
+.pad{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 14px);display:flex;gap:10px;align-items:flex-end}
+.padL{left:calc(env(safe-area-inset-left) + 12px)}
+.padR{right:calc(env(safe-area-inset-right) + 12px)}
+#stageWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 14px)}
+#thrBox{display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:auto}
+#thr{width:46px;height:clamp(120px,24vh,190px);border-radius:12px;border:2px solid #ffffff55;background:rgba(0,0,0,.35);position:relative;overflow:hidden;touch-action:none}
+#thrFill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,#ff8a3c,#ffd166);height:0}
+#thr span{position:absolute;left:0;right:0;top:4px;text-align:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000}
+.mini{pointer-events:auto;min-width:44px;height:36px;padding:0 8px;border-radius:10px;border:1px solid #ffffff44;background:rgba(0,0,0,.5);color:#fff;font-size:13px;font-weight:700;touch-action:manipulation}
+.mini.on{background:rgba(92,255,138,.3);border-color:#7dff9a}
+.mini.down{background:#ffffff33}
+#fRow{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + clamp(150px,30vh,235px));display:flex;justify-content:center;gap:6px;flex-wrap:wrap;padding:0 8px}
+#mapBtns{position:absolute;right:calc(env(safe-area-inset-right) + 10px);top:42%;display:flex;flex-direction:column;gap:6px}
+#warpLbl{display:inline-block;min-width:54px;text-align:center;font-size:13px;font-weight:700;line-height:36px;pointer-events:none;background:rgba(0,0,0,.4);border-radius:8px}
+#btnDeploy{position:absolute;left:50%;top:21%;transform:translateX(-50%);pointer-events:auto;padding:16px 26px;font-size:19px;border-radius:14px;border:none;font-weight:800;color:#0b1020;background:linear-gradient(180deg,#9dffb8,#3fd17a);box-shadow:0 6px 24px #0008;animation:pulse 1s infinite alternate}
+@keyframes pulse{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.06)}}
+#mineUI .mrow{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + clamp(96px,26vmin,130px));display:flex;gap:8px}
 /* ===== 弹层菜单 / Overlay screens ===== */
 .ov{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;background:rgba(3,5,16,.62);
   padding:calc(env(safe-area-inset-top) + 12px) calc(env(safe-area-inset-right) + 12px) calc(env(safe-area-inset-bottom) + 12px) calc(env(safe-area-inset-left) + 12px)}
-.panel{width:100%;max-width:440px;max-height:100%;overflow:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;
-  background:rgba(14,22,48,.92);border:1px solid #5aa9ff55;border-radius:18px;padding:18px 18px 14px;box-shadow:0 10px 40px #0008;text-align:center}
+.panel{width:100%;max-width:460px;max-height:100%;overflow:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;
+  background:rgba(14,22,48,.94);border:1px solid #5aa9ff55;border-radius:18px;padding:18px 18px 14px;box-shadow:0 10px 40px #0008;text-align:center}
 .panel h1{margin:2px 0 4px;font-size:clamp(28px,8vmin,40px);letter-spacing:2px;background:linear-gradient(90deg,#ffd166,#9ee7ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.panel h2{margin:4px 0 10px;font-size:22px}
-.panel p{margin:6px 0;font-size:14px;line-height:1.55;color:#c9d6ff}
+.panel h2{margin:4px 0 10px;font-size:21px}
+.panel h3{margin:14px 0 4px;font-size:16px;color:#9ee7ff;text-align:left}
+.panel p{margin:6px 0;font-size:13.5px;line-height:1.55;color:#c9d6ff;text-align:left}
+.panel a{color:#9ee7ff}
 .sub{color:#9fb3e6;font-size:14px;margin-bottom:10px}
 .mb{display:block;width:100%;margin:8px 0;padding:13px;border-radius:12px;border:none;font-size:17px;font-weight:700;color:#0b1020;background:linear-gradient(180deg,#ffe08a,#ffb547)}
 .mb.alt{background:#24345f;color:#e6eeff;border:1px solid #5aa9ff55}
+.mb:disabled{opacity:.45}
 .mb:active{transform:scale(.98)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid #ffffff14;text-align:left;font-size:14px}
-.row b{font-size:15px}.row small{color:#9fb3e6}
-.row button{flex:none;padding:9px 12px;border-radius:10px;border:none;background:#ffcf5c;color:#0b1020;font-weight:700;font-size:14px}
+.row b{font-size:14.5px}.row small{color:#9fb3e6}
+.row button{flex:none;padding:9px 11px;border-radius:10px;border:none;background:#ffcf5c;color:#0b1020;font-weight:700;font-size:13px}
 .row button:disabled{background:#3a4566;color:#8b97b8}
-.kv{display:flex;justify-content:space-between;font-size:15px;padding:4px 2px}
+.kv{display:flex;justify-content:space-between;gap:8px;font-size:14px;padding:3px 2px;text-align:left}
 .gold{color:#ffd166;font-weight:700}
-.ach.lock{opacity:.45}
-#toasts{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translateX(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;width:92%}
-.toast{background:rgba(10,16,40,.88);border:1px solid #ffd16688;color:#fff;padding:8px 14px;border-radius:20px;font-size:14px;animation:tin .25s ease-out;text-align:center}
+.ach.lock{opacity:.5}
+#toasts{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 120px);transform:translateX(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;width:92%}
+.toast{background:rgba(10,16,40,.9);border:1px solid #ffd16688;color:#fff;padding:7px 13px;border-radius:20px;font-size:13.5px;animation:tin .25s ease-out;text-align:center}
 @keyframes tin{from{opacity:0;transform:translateY(-8px)}to{opacity:1}}
-#hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + clamp(86px,26vmin,140px));z-index:3;pointer-events:none;
-  font-size:13px;color:#dfe8ff;background:rgba(0,0,0,.38);padding:5px 10px;border-radius:10px;max-width:86%;text-align:center}
+#hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + clamp(150px,36vmin,190px));z-index:3;pointer-events:none;
+  font-size:12.5px;color:#dfe8ff;background:rgba(0,0,0,.45);padding:5px 10px;border-radius:10px;max-width:90%;text-align:center}
 #hint:empty{display:none}
-#skip{position:fixed;right:calc(env(safe-area-inset-right) + 16px);bottom:calc(env(safe-area-inset-bottom) + 20px);z-index:6}
+/* ===== 机库 / Hangar ===== */
+#hangar{position:fixed;inset:0;z-index:8;display:flex;flex-direction:column;background:#0a1124;
+  padding:calc(env(safe-area-inset-top) + 6px) calc(env(safe-area-inset-right) + 8px) calc(env(safe-area-inset-bottom) + 8px) calc(env(safe-area-inset-left) + 8px)}
+.hbar{display:flex;align-items:center;gap:8px;padding:2px 2px 6px}
+.hbar b{font-size:18px;flex:1}
+.hmain{flex:1;position:relative;min-height:0;border-radius:12px;overflow:hidden;border:1px solid #5aa9ff33}
+#hcv{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#hstats{position:absolute;right:6px;top:6px;width:min(56%,300px);max-height:calc(100% - 12px);overflow:auto;background:rgba(6,10,26,.78);border:1px solid #5aa9ff33;border-radius:10px;padding:6px 8px;font-size:12px;touch-action:pan-y}
+#hstats .kv{font-size:12.5px;padding:1px 0}
+.stg{font-size:11.5px;color:#c9d6ff;padding:2px 0;text-align:left}
+.stg.bad,.bad{color:#ff8a8a}
+#hsel{position:absolute;left:6px;bottom:6px;display:flex;gap:6px;align-items:center;background:rgba(6,10,26,.85);padding:5px;border-radius:10px;border:1px solid #ffd16666}
+#hsel span{font-size:12px;max-width:110px;color:#ffd166}
+#palette{display:flex;gap:6px;overflow-x:auto;padding:6px 0;touch-action:pan-x;-webkit-overflow-scrolling:touch;flex:none}
+.pcard{flex:none;width:96px;padding:4px 4px 6px;border-radius:10px;border:1px solid #5aa9ff44;background:#152044;color:#e6eeff;display:flex;flex-direction:column;align-items:center;gap:2px;touch-action:pan-x}
+.pcard b{font-size:11.5px;line-height:1.2}
+.pcard small{font-size:10px;color:#9fb3e6;line-height:1.2}
+.pcard.locked{opacity:.55}
+.hfoot{display:flex;gap:8px;flex:none}
+.hfoot .mb{margin:4px 0;padding:11px 6px;font-size:15px}
 </style>
 </head>
 <body>
@@ -81,7 +117,6 @@ button{font-family:inherit;cursor:pointer}
 <div id="hud">
   <div id="stats"></div>
   <div id="topbtns">
-    <button class="tb hide" id="btnEnd" data-i18n="end"></button>
     <button class="tb hide" id="btnPause" aria-label="pause">⏸</button>
     <button class="tb" id="btnMute" aria-label="mute">🔊</button>
     <button class="tb" id="btnLang" aria-label="language"></button>
@@ -90,56 +125,117 @@ button{font-family:inherit;cursor:pointer}
 <div id="toasts"></div>
 <div id="hint"></div>
 
-<!-- 触屏按键（多点触控）/ Touch buttons (multi-touch) -->
-<div id="controls">
-  <div class="pad" id="padL">
-    <button class="cb" data-k="left">◀<small data-i18n="left"></small></button>
-    <button class="cb" data-k="right">▶<small data-i18n="right"></small></button>
+<!-- 飞行控件 / Flight controls -->
+<div id="flightUI" class="hide">
+  <div id="fRow">
+    <button class="mini" id="btnSAS" data-k="sas">🧭 <span id="sasLbl"></span></button>
+    <button class="mini" id="btnAuto">🤖 <span data-i18n="auto"></span></button>
+    <button class="mini" data-k="warpDown">⏪</button><span id="warpLbl">×1</span><button class="mini" data-k="warpUp">⏩</button>
+    <button class="mini" id="btnMap" data-k="map">🗺 <span data-i18n="map"></span></button>
   </div>
-  <div class="pad" id="padR">
-    <button class="cb" data-k="sep">⇋<small data-i18n="sep"></small></button>
-    <button class="cb" data-k="down">▼<small data-i18n="dig"></small></button>
-    <button class="cb" data-k="up">▲<small data-i18n="up"></small></button>
-    <button class="cb big" data-k="thrust">🔥<small data-i18n="thrust"></small></button>
+  <div id="mapBtns" class="hide">
+    <button class="mini" id="btnZoomIn">＋</button><button class="mini" id="btnZoomOut">－</button><button class="mini" id="btnFocus" data-i18n="focus"></button>
+  </div>
+  <div class="pad padL">
+    <button class="cb" data-k="left">⟲<small data-i18n="rotL"></small></button>
+    <button class="cb" data-k="right">⟳<small data-i18n="rotR"></small></button>
+  </div>
+  <div id="stageWrap"><button class="cb big" data-k="stage">🚀<small id="btnStageLbl"></small></button></div>
+  <div class="pad padR">
+    <div id="thrBox">
+      <button class="mini" data-k="full" data-i18n="full"></button>
+      <div id="thr"><div id="thrFill"></div><span data-i18n="thr"></span></div>
+      <button class="mini" data-k="cut" data-i18n="cut"></button>
+    </div>
+  </div>
+  <button id="btnDeploy" class="hide" data-i18n="deploy"></button>
+</div>
+
+<!-- 采矿控件 / Mining controls -->
+<div id="mineUI" class="hide">
+  <div class="mrow"><button class="mini" id="btnMint">⛓ <span data-i18n="emptyBox"></span></button><button class="mini" id="btnMarket" data-i18n="market"></button><button class="mini" id="btnEnd" data-i18n="end"></button></div>
+  <div class="pad padL">
+    <button class="cb" data-k="left">◀</button>
+    <button class="cb" data-k="right">▶</button>
+  </div>
+  <div class="pad padR">
+    <button class="cb" data-k="down">▼</button>
+    <button class="cb" data-k="up">▲</button>
   </div>
 </div>
-<button class="tb hide" id="skip" data-i18n="skip"></button>
+
+<!-- 机库 / Hangar -->
+<div id="hangar" class="hide">
+  <div class="hbar"><b data-i18n="hangar"></b><span class="gold" id="hFunds"></span><button class="tb" id="hRover" data-i18n="rover"></button><button class="tb" id="hBack" data-i18n="back"></button></div>
+  <div class="hmain">
+    <canvas id="hcv"></canvas>
+    <div id="hstats" class="scroll"></div>
+    <div id="hsel" class="hide"><span id="hselName"></span><button class="mini" id="selUp">▲</button><button class="mini" id="selDown">▼</button><button class="mini" id="selDel">✕</button></div>
+  </div>
+  <div style="font-size:11px;color:#9fb3e6;padding:4px 2px 0" data-i18n="tapHint"></div>
+  <div id="palette" class="scroll"></div>
+  <div class="hfoot"><button class="mb alt" id="hDefault" data-i18n="defaultRocket"></button><button class="mb alt" id="hClear" data-i18n="clear"></button><button class="mb" id="hLaunch" data-i18n="launch"></button></div>
+</div>
 
 <!-- 主菜单 / Main menu -->
 <div class="ov" id="ovMenu">
-  <div class="panel">
+  <div class="panel scroll">
     <h1 data-i18n="title"></h1>
     <div class="sub" id="menuSub"></div>
-    <div class="kv"><span data-i18n="credits"></span><span class="gold" id="menuCredits">0</span></div>
+    <div class="kv"><span data-i18n="funds"></span><span class="gold" id="menuFunds">0</span></div>
     <div class="kv"><span data-i18n="best"></span><span class="gold" id="menuBest">0</span></div>
     <button class="mb" id="btnStart" data-i18n="start"></button>
-    <button class="mb alt" id="btnShop" data-i18n="shop"></button>
+    <button class="mb alt" id="btnRover" data-i18n="rover"></button>
     <button class="mb alt" id="btnAch" data-i18n="ach"></button>
+    <button class="mb alt" id="btnAbout" data-i18n="about"></button>
+    <a class="mb alt" id="btnProject" href="https://github.com/yydemo/star-chain-earn-mine" target="_blank" rel="noopener" data-i18n="project" style="display:block;text-align:center;text-decoration:none"></a>
     <p data-i18n="how"></p>
     <p style="font-size:12px;color:#7f8fbf" data-i18n="keys"></p>
   </div>
 </div>
-<!-- 升级商店 / Upgrade shop -->
+<!-- CMR 升级与零件解锁 / CMR upgrades and part unlocks -->
 <div class="ov hide" id="ovShop">
-  <div class="panel">
-    <h2 data-i18n="shop"></h2>
-    <div class="kv"><span data-i18n="credits"></span><span class="gold" id="shopCredits">0</span></div>
+  <div class="panel scroll">
+    <h2 data-i18n="roverTitle"></h2>
+    <div class="kv"><span data-i18n="funds"></span><span class="gold" id="shopFunds">0</span></div>
+    <div class="kv"><span id="shopMass"></span></div>
     <div id="shopList"></div>
-    <button class="mb" id="shopStart" data-i18n="start"></button>
+    <h3 data-i18n="partsShop"></h3>
+    <div id="shopParts"></div>
+    <button class="mb" id="shopHangar" data-i18n="start"></button>
     <button class="mb alt" id="shopBack" data-i18n="back"></button>
   </div>
 </div>
-<!-- 成就 / Achievements -->
+<!-- 里程碑 / Milestones -->
 <div class="ov hide" id="ovAch">
-  <div class="panel">
+  <div class="panel scroll">
     <h2 data-i18n="ach"></h2>
     <div id="achList"></div>
     <button class="mb alt" id="achBack" data-i18n="back"></button>
   </div>
 </div>
+<!-- 模拟市场 / Simulated market -->
+<div class="ov hide" id="ovMarket">
+  <div class="panel scroll">
+    <h2 data-i18n="market"></h2>
+    <p data-i18n="marketDisclaimer"></p>
+    <div id="marketList"></div>
+    <button class="mb alt" id="marketBack" data-i18n="back"></button>
+  </div>
+</div>
+<!-- 关于 / About -->
+<div class="ov hide" id="ovAbout">
+  <div class="panel scroll">
+    <h2 data-i18n="about"></h2>
+    <p data-i18n="aboutText"></p>
+    <p><a href="https://github.com/yydemo/star-chain-earn-mine" target="_blank" rel="noopener">github.com/yydemo/star-chain-earn-mine</a><br>
+       <a href="https://github.com/yydemo/moon-miner" target="_blank" rel="noopener">github.com/yydemo/moon-miner</a></p>
+    <button class="mb alt" id="aboutBack" data-i18n="back"></button>
+  </div>
+</div>
 <!-- 结果 / Result -->
 <div class="ov hide" id="ovResult">
-  <div class="panel">
+  <div class="panel scroll">
     <h2 id="resTitle"></h2>
     <div id="resBody"></div>
     <div id="resBtns"></div>
@@ -150,1006 +246,20 @@ button{font-family:inherit;cursor:pointer}
   <div class="panel">
     <h2 data-i18n="paused"></h2>
     <button class="mb" id="btnResume" data-i18n="resume"></button>
+    <button class="mb alt" id="btnPauseHangar" data-i18n="toHangar"></button>
     <button class="mb alt" id="btnQuit" data-i18n="menu"></button>
   </div>
 </div>
 
-<script>
-'use strict';
-/* =====================================================================
- * 月球挖矿 Moon Miner — 原创 HTML5 小游戏 / an original HTML5 mini game
- * 全部代码原创，所有画面均由 Canvas 程序绘制，无外部素材。
- * All code is original; every visual is drawn procedurally on Canvas, no external assets.
- * License: MIT
- * ===================================================================== */
-
-// ===== 可改名常量（改这里即可全局生效）/ Renameable constants (change here, applies everywhere) =====
-const DIGGER_NAME = { zh: '小矿工挖掘机', en: 'Little Digger' };
-const GAME_NAME = { zh: '月球挖矿', en: 'Moon Miner' };
-
-// ===== 多语言文本表 / i18n string table =====
-const I18N = {
-  zh: {
-    title: GAME_NAME.zh, sub: '驾驶{0}登月采矿', start: '开始任务', shop: '升级商店', ach: '成就', back: '返回',
-    credits: '资金', best: '最高分', lang: 'EN', left: '左', right: '右', up: '推进', dig: '挖掘', thrust: '点火', sep: '分离',
-    how: '玩法：按住「点火」发射火箭 → 一级燃料耗尽后点「分离」→ 控制着陆器平稳降落 → 驾驶挖掘机采矿，运回着陆器换取资金 → 升级装备再出发。',
-    keys: '键盘：←→/AD 移动或转向，↑/W 推进，空格 点火，↓/S 挖掘或分离，P 暂停，M 静音',
-    alt: '高度', spd: '速度', fuel: '燃料', stage: '级', target: '目标',
-    launchHint: '按住「点火」升空，目标高度 {0} km', sepNow: '一级燃料耗尽！快点「分离」', perfectSep: '完美分离！+{0}', autoSep: '自动分离',
-    transit: '地月转移中…', skip: '跳过 ▶',
-    landHint: '平稳降落：下降 <3 m/s，水平 <2.5 m/s，倾角 <15°，绿灯处为着陆场', vs: '垂直', hs: '水平', ang: '倾角',
-    landed: '着陆成功！', landBonus: '着陆奖励 +{0}',
-    crash: '着陆器坠毁', tooFast: '下降太快', tooSide: '水平速度太大', tooTilt: '倾斜太大', tooSteep: '地面太陡',
-    retryLand: '重试着陆', retryLaunch: '重新发射', menu: '主菜单', launchFail: '发射失败', launchFailWhy: '没有到达转移高度',
-    mineHint: '◀▶ 行驶，▼ 向下挖，顶着墙走会横向挖，▲ 推进器；回到着陆器自动卸货充电',
-    cargo: '货舱', battery: '电量', depth: '深度', cargoFull: '货舱已满！回着陆器卸货', bedrock: '基岩挖不动', lowBat: '电量不足，尽快返回着陆器！',
-    end: '结束', endNeed: '回到着陆器旁才能结束任务', batDead: '电量耗尽，舱内货物丢失', runOver: '任务完成', runEarned: '本次收入',
-    landingB: '着陆奖励', sales: '矿物销售', sepB: '分离奖励', newHigh: '🏆 新纪录！', again: '再来一次', paused: '已暂停', resume: '继续',
-    level: '等级', buy: '升级', maxed: '已满级', poor: '资金不足', achUnlock: '🏅 成就解锁：{0}', atLander: '着陆器：卸货 / 充电中', sold: '+{0}'
-  },
-  en: {
-    title: GAME_NAME.en, sub: 'Fly {0} to the Moon and mine', start: 'Start Mission', shop: 'Upgrade Shop', ach: 'Achievements', back: 'Back',
-    credits: 'Credits', best: 'High score', lang: '中', left: 'Left', right: 'Right', up: 'Jet', dig: 'Dig', thrust: 'Thrust', sep: 'Stage',
-    how: 'How to play: hold THRUST to launch → tap STAGE when stage 1 runs dry → land the lander softly → drive the excavator, mine ore and bring it back to the lander for credits → buy upgrades and go again.',
-    keys: 'Keyboard: ←→/AD move or tilt, ↑/W jet, Space thrust, ↓/S dig or stage, P pause, M mute',
-    alt: 'Alt', spd: 'Speed', fuel: 'Fuel', stage: 'Stage', target: 'Target',
-    launchHint: 'Hold THRUST to lift off. Target altitude {0} km', sepNow: 'Stage 1 empty! Tap STAGE now', perfectSep: 'Perfect staging! +{0}', autoSep: 'Auto staging',
-    transit: 'Trans-lunar transfer…', skip: 'Skip ▶',
-    landHint: 'Land softly: descent <3 m/s, drift <2.5 m/s, tilt <15°. Green lights mark the pad', vs: 'V-spd', hs: 'H-spd', ang: 'Tilt',
-    landed: 'Touchdown!', landBonus: 'Landing bonus +{0}',
-    crash: 'Lander crashed', tooFast: 'Descending too fast', tooSide: 'Drifting too fast', tooTilt: 'Tilted too much', tooSteep: 'Ground too steep',
-    retryLand: 'Retry landing', retryLaunch: 'Relaunch', menu: 'Main menu', launchFail: 'Launch failed', launchFailWhy: 'Did not reach transfer altitude',
-    mineHint: '◀▶ drive, ▼ dig down, push into a wall to dig sideways, ▲ jet; return to the lander to unload and recharge',
-    cargo: 'Cargo', battery: 'Battery', depth: 'Depth', cargoFull: 'Cargo full! Return to the lander', bedrock: 'Bedrock is too hard', lowBat: 'Battery low, head back to the lander!',
-    end: 'End', endNeed: 'Get back to the lander to end the mission', batDead: 'Battery dead, cargo lost', runOver: 'Mission complete', runEarned: 'Earned this run',
-    landingB: 'Landing bonus', sales: 'Ore sales', sepB: 'Staging bonus', newHigh: '🏆 New high score!', again: 'Play again', paused: 'Paused', resume: 'Resume',
-    level: 'Lv', buy: 'Upgrade', maxed: 'Maxed', poor: 'Not enough credits', achUnlock: '🏅 Achievement: {0}', atLander: 'Lander: unloading / charging', sold: '+{0}'
-  }
-};
-// 矿物名称 / Ore names
-const ORE_NAMES = {
-  zh: ['', '月壤', '玄武岩', '水冰', '铁矿', '钛铁矿', '氦-3', '基岩'],
-  en: ['', 'Regolith', 'Basalt', 'Water ice', 'Iron', 'Titanium', 'Helium-3', 'Bedrock']
-};
-// 升级项名称与说明 / Upgrade names and descriptions
-const UPGRADE_TEXT = {
-  zh: { drill: ['钻头', '挖得更快'], cargo: ['货舱', '一次装更多矿'], fuel: ['燃料箱', '火箭与着陆器燃料更多'], engine: ['发动机', '火箭、着陆器、推进器推力更大'], battery: ['电池', '挖掘机续航更久'] },
-  en: { drill: ['Drill', 'Dig faster'], cargo: ['Cargo bay', 'Carry more ore'], fuel: ['Fuel tanks', 'More fuel for rocket and lander'], engine: ['Engine', 'More thrust for rocket, lander and jet'], battery: ['Battery', 'Excavator runs longer'] }
-};
-// 成就名称与说明 / Achievement names and descriptions
-const ACH_TEXT = {
-  zh: { liftoff: ['点火升空', '完成第一次发射'], perfectSep: ['完美分离', '燃料耗尽 0.8 秒内完成分离'], landed: ['鹰已着陆', '第一次成功着陆'],
-        soft: ['羽毛落地', '以小于 1 m/s 的速度着陆'], pad: ['精准着陆', '降落在着陆场上'], he3: ['未来能源', '挖到氦-3'],
-        deep: ['深层勘探', '挖到 30 米深'], rich: ['月球富翁', '单次任务收入达到 1000'], maxed: ['顶级装备', '任意一项升到满级'], veteran: ['老练宇航员', '完成 5 次任务'] },
-  en: { liftoff: ['Liftoff', 'Complete your first launch'], perfectSep: ['Clean Staging', 'Stage within 0.8 s of burnout'], landed: ['The Eagle Has Landed', 'First successful landing'],
-        soft: ['Feather Touch', 'Land slower than 1 m/s'], pad: ['Bullseye', 'Land on the landing pad'], he3: ['Future Fuel', 'Mine Helium-3'],
-        deep: ['Deep Survey', 'Dig 30 m deep'], rich: ['Moon Tycoon', 'Earn 1000 in one mission'], maxed: ['Top Gear', 'Max out any upgrade'], veteran: ['Veteran', 'Finish 5 missions'] }
-};
-const ACH_ORDER = ['liftoff', 'perfectSep', 'landed', 'soft', 'pad', 'he3', 'deep', 'rich', 'maxed', 'veteran'];
-
-// ===== 存档（localStorage）/ Save data (localStorage) =====
-const SAVE_KEY = 'moonMiner.save.v1';
-function defaultSave() {
-  return { credits: 0, high: 0, lang: 'zh', muted: false,
-    up: { drill: 0, cargo: 0, fuel: 0, engine: 0, battery: 0 }, ach: {}, stats: { runs: 0 } };
-}
-function loadSave() {
-  try {
-    const s = JSON.parse(localStorage.getItem(SAVE_KEY));
-    if (s && typeof s === 'object') {
-      const d = defaultSave();
-      return Object.assign(d, s, { up: Object.assign(d.up, s.up), ach: Object.assign({}, s.ach), stats: Object.assign(d.stats, s.stats) });
-    }
-  } catch (e) { /* 存档损坏则重置 / reset on corrupt save */ }
-  return defaultSave();
-}
-let save = loadSave();
-function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* 隐私模式可能失败 / may fail in private mode */ } }
-
-// 取当前语言文本，支持 {0} 占位 / Get text in current language with {0} placeholders
-function t(key, ...args) {
-  let s = (I18N[save.lang] && I18N[save.lang][key]) ?? I18N.zh[key] ?? key;
-  args.forEach((a, i) => { s = s.replace('{' + i + '}', a); });
-  return s;
-}
-const $ = id => document.getElementById(id);
-
-// ===== 升级配置 / Upgrade config =====
-const UPGRADES = { drill: 120, cargo: 100, fuel: 90, engine: 110, battery: 100 }; // 基础价格 / base cost
-const MAX_LVL = 5;
-const upCost = k => Math.round(UPGRADES[k] * Math.pow(1.75, save.up[k]));
-
-// ===== 随机数（可设种子）/ Seeded RNG =====
-function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let q = Math.imul(a ^ a >>> 15, 1 | a); q = q + Math.imul(q ^ q >>> 7, 61 | q) ^ q; return ((q ^ q >>> 14) >>> 0) / 4294967296; }; }
-const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
-const lerp = (a, b, k) => a + (b - a) * k;
-
-// ===== 画布与高清屏适配 / Canvas & devicePixelRatio =====
-const cv = $('game'), ctx = cv.getContext('2d');
-let W = 0, H = 0, DPR = 1, TS = 40; // TS = 采矿格子像素 / mining tile size in CSS px
-let tileCache = {};
-function resize() {
-  DPR = Math.min(window.devicePixelRatio || 1, 3);
-  W = window.innerWidth; H = window.innerHeight;
-  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  TS = Math.round(clamp(Math.min(W, H) / 10, 30, 60));
-  tileCache = {};
-}
-window.addEventListener('resize', resize);
-window.addEventListener('orientationchange', () => setTimeout(resize, 150));
-resize();
-
-// 星空（预生成）/ Pre-generated starfield
-const STARS = (() => { const r = mulberry32(42), a = []; for (let i = 0; i < 180; i++) a.push({ x: r(), y: r(), s: r() * 1.4 + 0.3, p: r() * 6.28 }); return a; })();
-
-// ===== 声音（WebAudio 合成）/ Sound (synthesised with WebAudio) =====
-const audio = {
-  ac: null, engGain: null, noiseBuf: null,
-  unlock() {
-    if (!this.ac) {
-      try { this.ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
-      // 发动机噪声循环 / looping engine noise
-      const len = this.ac.sampleRate, buf = this.ac.createBuffer(1, len, this.ac.sampleRate), d = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-      this.noiseBuf = buf;
-      const src = this.ac.createBufferSource(); src.buffer = buf; src.loop = true;
-      const f = this.ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 420;
-      this.engGain = this.ac.createGain(); this.engGain.gain.value = 0;
-      src.connect(f); f.connect(this.engGain); this.engGain.connect(this.ac.destination); src.start();
-    }
-    if (this.ac.state === 'suspended') this.ac.resume();
-  },
-  engine(level) { // 0..1 发动机音量 / engine volume
-    if (!this.engGain) return;
-    this.engGain.gain.setTargetAtTime(save.muted ? 0 : level * 0.22, this.ac.currentTime, 0.05);
-  },
-  tone(freq, dur, type = 'square', vol = 0.06, slide = 0, delay = 0) {
-    if (!this.ac || save.muted) return;
-    const t0 = this.ac.currentTime + delay, o = this.ac.createOscillator(), g = this.ac.createGain();
-    o.type = type; o.frequency.setValueAtTime(freq, t0);
-    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + slide), t0 + dur);
-    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    o.connect(g); g.connect(this.ac.destination); o.start(t0); o.stop(t0 + dur + 0.02);
-  },
-  boom(vol = 0.35, dur = 0.8) { // 爆炸声 / explosion
-    if (!this.ac || save.muted) return;
-    const s = this.ac.createBufferSource(), f = this.ac.createBiquadFilter(), g = this.ac.createGain(), t0 = this.ac.currentTime;
-    s.buffer = this.noiseBuf; f.type = 'lowpass'; f.frequency.setValueAtTime(900, t0); f.frequency.exponentialRampToValueAtTime(60, t0 + dur);
-    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    s.connect(f); f.connect(g); g.connect(this.ac.destination); s.start(t0); s.stop(t0 + dur);
-  },
-  dig() { this.tone(90 + Math.random() * 60, 0.05, 'sawtooth', 0.03); },
-  coin() { this.tone(880, 0.08, 'square', 0.05); this.tone(1320, 0.12, 'square', 0.05, 0, 0.07); },
-  win() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, 0.18, 'triangle', 0.08, 0, i * 0.11)); },
-  click() { this.tone(660, 0.05, 'triangle', 0.05); }
-};
-
-// ===== 输入：键盘 + 多点触控按键 / Input: keyboard + multi-touch buttons =====
-const input = { left: false, right: false, up: false, down: false, thrust: false, sep: false };
-const taps = new Set(); // 本帧新按下的键 / keys newly pressed this frame
-const KEYMAP = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'up', KeyW: 'up',
-  Space: 'thrust', ArrowDown: 'down', KeyS: 'down', Enter: 'sep' };
-window.addEventListener('keydown', e => {
-  if (e.code === 'KeyP' || e.code === 'Escape') { togglePause(); return; }
-  if (e.code === 'KeyM') { toggleMute(); return; }
-  const k = KEYMAP[e.code]; if (!k) return;
-  e.preventDefault(); audio.unlock();
-  if (!input[k]) taps.add(k);
-  input[k] = true;
-});
-window.addEventListener('keyup', e => { const k = KEYMAP[e.code]; if (k) input[k] = false; });
-document.querySelectorAll('.cb').forEach(b => {
-  const k = b.dataset.k;
-  const on = e => { e.preventDefault(); audio.unlock(); try { b.setPointerCapture(e.pointerId); } catch (_) { /* 忽略 / ignore */ } input[k] = true; taps.add(k); b.classList.add('down'); };
-  const off = () => { input[k] = false; b.classList.remove('down'); };
-  b.addEventListener('pointerdown', on);
-  b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
-  b.addEventListener('contextmenu', e => e.preventDefault());
-});
-// 阻止页面滚动/缩放（可滚动面板除外）/ Block page scroll & zoom (except scrollable panels)
-document.addEventListener('touchmove', e => { if (!e.target.closest || !e.target.closest('.panel')) e.preventDefault(); }, { passive: false });
-document.addEventListener('gesturestart', e => e.preventDefault());
-document.addEventListener('dblclick', e => e.preventDefault());
-function clearInput() { for (const k in input) input[k] = false; document.querySelectorAll('.cb').forEach(b => b.classList.remove('down')); }
-
-// ===== 界面工具 / UI helpers =====
-function toast(msg) {
-  const box = $('toasts'); while (box.children.length >= 3) box.firstChild.remove();
-  const d = document.createElement('div'); d.className = 'toast'; d.textContent = msg; box.appendChild(d);
-  setTimeout(() => d.remove(), 2400);
-}
-const toastTimes = {};
-function toastOnce(key, msg, gap = 2.5) { // 节流提示 / throttled toast
-  const now = performance.now() / 1000; if (now - (toastTimes[key] || -99) < gap) return; toastTimes[key] = now; toast(msg);
-}
-function unlockAch(id) {
-  if (save.ach[id]) return; save.ach[id] = Date.now(); persist();
-  toast(t('achUnlock', ACH_TEXT[save.lang][id][0])); audio.win();
-}
-function applyLang() {
-  document.documentElement.lang = save.lang === 'zh' ? 'zh-CN' : 'en';
-  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-  $('btnLang').textContent = t('lang');
-  $('menuSub').textContent = t('sub', DIGGER_NAME[save.lang]);
-  document.title = GAME_NAME.zh + ' ' + GAME_NAME.en;
-  refreshMenus(); setHint();
-}
-function refreshMenus() {
-  $('menuCredits').textContent = save.credits; $('menuBest').textContent = save.high; $('shopCredits').textContent = save.credits;
-  // 商店列表 / shop list
-  const sl = $('shopList'); sl.innerHTML = '';
-  for (const k of Object.keys(UPGRADES)) {
-    const lvl = save.up[k], cost = upCost(k), row = document.createElement('div'); row.className = 'row';
-    const txt = document.createElement('div');
-    txt.innerHTML = '<b></b> <small></small><br><small></small>';
-    txt.children[0].textContent = UPGRADE_TEXT[save.lang][k][0];
-    txt.children[1].textContent = t('level') + ' ' + lvl + '/' + MAX_LVL;
-    txt.children[3].textContent = UPGRADE_TEXT[save.lang][k][1];
-    const b = document.createElement('button');
-    if (lvl >= MAX_LVL) { b.textContent = t('maxed'); b.disabled = true; }
-    else { b.textContent = t('buy') + ' ' + cost; b.disabled = save.credits < cost; }
-    b.onclick = () => {
-      if (save.up[k] >= MAX_LVL || save.credits < upCost(k)) { toast(t('poor')); return; }
-      save.credits -= upCost(k); save.up[k]++; persist(); audio.coin();
-      if (save.up[k] >= MAX_LVL) unlockAch('maxed');
-      refreshMenus();
-    };
-    row.appendChild(txt); row.appendChild(b); sl.appendChild(row);
-  }
-  // 成就列表 / achievements list
-  const al = $('achList'); al.innerHTML = '';
-  for (const id of ACH_ORDER) {
-    const row = document.createElement('div'); row.className = 'row ach' + (save.ach[id] ? '' : ' lock');
-    const txt = document.createElement('div'); txt.innerHTML = '<b></b><br><small></small>';
-    txt.children[0].textContent = (save.ach[id] ? '🏅 ' : '🔒 ') + ACH_TEXT[save.lang][id][0];
-    txt.children[2].textContent = ACH_TEXT[save.lang][id][1];
-    row.appendChild(txt); al.appendChild(row);
-  }
-}
-function showOverlay(id) {
-  ['ovMenu', 'ovShop', 'ovAch', 'ovResult', 'ovPause'].forEach(o => $(o).classList.toggle('hide', o !== id));
-  refreshMenus();
-}
-function showResult(title, rows, buttons) {
-  $('resTitle').textContent = title;
-  const body = $('resBody'); body.innerHTML = '';
-  rows.forEach(([k, v, cls]) => {
-    const d = document.createElement('div'); d.className = 'kv';
-    const a = document.createElement('span'); a.textContent = k; const b = document.createElement('span'); b.textContent = v; b.className = cls || '';
-    d.appendChild(a); d.appendChild(b); body.appendChild(d);
-  });
-  const bb = $('resBtns'); bb.innerHTML = '';
-  buttons.forEach(([label, fn, alt]) => {
-    const b = document.createElement('button'); b.className = 'mb' + (alt ? ' alt' : ''); b.textContent = label;
-    b.onclick = () => { audio.unlock(); audio.click(); fn(); }; bb.appendChild(b);
-  });
-  showOverlay('ovResult');
-}
-
-// ===== 游戏状态 / Game state =====
-let phase = 'menu';   // menu | launch | transit | landing | mining | over
-let paused = false;
-let parts = [];       // 粒子（当前阶段坐标系）/ particles in the current phase's world units
-let floats = [];      // 漂浮文字 / floating texts
-let run = null;       // 本次任务统计 / current mission stats
-let L = null, TR = null, LD = null, M = null; // 各阶段状态 / per-phase state
-let clock = 0;
-
-const CONTROL_SETS = { launch: ['thrust', 'sep'], landing: ['left', 'right', 'thrust'], mining: ['left', 'right', 'down', 'up'] };
-let scene = 'menu'; // 当前绘制的场景（结算时保留上一个画面）/ scene being drawn (kept behind result screens)
-function setPhase(p) {
-  if (p !== 'over') scene = p;
-  phase = p; parts = []; floats = []; clearInput();
-  if (p !== 'over' && p !== 'mining') M = null; // 离开采矿时清空 / clear mining state when leaving
-  const set = CONTROL_SETS[p] || [];
-  document.querySelectorAll('.cb').forEach(b => b.classList.toggle('hide', !set.includes(b.dataset.k)));
-  $('btnPause').classList.toggle('hide', !CONTROL_SETS[p] && p !== 'transit');
-  $('btnEnd').classList.toggle('hide', p !== 'mining');
-  $('skip').classList.toggle('hide', p !== 'transit');
-  if (CONTROL_SETS[p] || p === 'transit') showOverlay(null);
-  audio.engine(0); setHint(); updateHUD(true);
-}
-function setHint() {
-  const h = { launch: t('launchHint', LAUNCH_TARGET / 10), landing: t('landHint'), mining: t('mineHint'), transit: '' }[phase] || '';
-  $('hint').textContent = h; hintT = 8; // 提示 8 秒后自动隐藏 / hint auto-hides after 8 s
-}
-let hintT = 0;
-function goMenu() { paused = false; setPhase('menu'); showOverlay('ovMenu'); }
-
-function addPart(x, y, vx, vy, life, color, size) { if (parts.length < 400) parts.push({ x, y, vx, vy, life, max: life, color, size }); }
-function stepParts(dt, gy) { // gy = 重力加速度（世界单位，正值向 +y）/ gravity along +y in world units
-  for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.life -= dt; if (p.life <= 0) { parts.splice(i, 1); continue; } p.vy += gy * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
-}
-function drawParts(toScreen, scale) {
-  for (const p of parts) { const [sx, sy] = toScreen(p.x, p.y); const a = p.life / p.max; ctx.globalAlpha = a; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(sx, sy, Math.max(0.8, p.size * scale * (0.5 + a * 0.5)), 0, 6.283); ctx.fill(); }
-  ctx.globalAlpha = 1;
-}
-
-// ===== 通用绘图 / Shared drawing =====
-function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
-function drawStars(alpha, drift = 0) {
-  if (alpha <= 0) return;
-  ctx.fillStyle = '#fff';
-  for (const s of STARS) {
-    ctx.globalAlpha = alpha * (0.55 + 0.45 * Math.sin(clock * 2 + s.p));
-    ctx.fillRect(((s.x * W + drift * s.s) % W + W) % W, s.y * H, s.s, s.s);
-  }
-  ctx.globalAlpha = 1;
-}
-function drawEarth(x, y, r) {
-  const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
-  g.addColorStop(0, '#6fc3ff'); g.addColorStop(1, '#1b4f9c');
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
-  ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.clip();
-  ctx.fillStyle = '#3fae5a';
-  [[-0.3, -0.2, 0.35], [0.25, 0.15, 0.3], [-0.05, 0.45, 0.2], [0.45, -0.4, 0.18]].forEach(([dx, dy, rr]) => { ctx.beginPath(); ctx.ellipse(x + dx * r, y + dy * r, rr * r, rr * r * 0.7, dx * 3, 0, 6.283); ctx.fill(); });
-  ctx.fillStyle = 'rgba(255,255,255,.55)';
-  [[-0.5, 0.1], [0.1, -0.55], [0.3, 0.55]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.ellipse(x + dx * r, y + dy * r, r * 0.35, r * 0.07, 0.3, 0, 6.283); ctx.fill(); });
-  ctx.restore();
-  ctx.strokeStyle = 'rgba(140,200,255,.45)'; ctx.lineWidth = Math.max(1, r * 0.06); ctx.beginPath(); ctx.arc(x, y, r * 1.03, 0, 6.283); ctx.stroke();
-}
-function drawMoon(x, y, r) {
-  const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
-  g.addColorStop(0, '#f1efe8'); g.addColorStop(1, '#8d8b86');
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
-  ctx.fillStyle = 'rgba(90,88,84,.45)';
-  [[-0.3, -0.25, 0.18], [0.3, 0.1, 0.22], [-0.1, 0.4, 0.13], [0.35, -0.45, 0.1], [-0.5, 0.2, 0.09]].forEach(([dx, dy, rr]) => { ctx.beginPath(); ctx.arc(x + dx * r, y + dy * r, rr * r, 0, 6.283); ctx.fill(); });
-}
-// 小挖掘机（原创矢量画）/ The little excavator (original vector art). size = 宽度像素 / width in px; (x,y) = 履带底部中心 / bottom centre
-function drawDigger(x, y, size, face = 1, armAng = 0, digging = false, dead = false) {
-  const s = size / 40; // 按 40 单位宽设计 / designed 40 units wide
-  ctx.save(); ctx.translate(x, y); ctx.scale(face * s, s);
-  // 履带 / tracks
-  ctx.fillStyle = '#2b2d33'; roundRect(-18, -9, 36, 9, 4.5); ctx.fill();
-  ctx.fillStyle = '#6b6f78'; for (let i = -13; i <= 13; i += 6.5) { ctx.beginPath(); ctx.arc(i, -4.5, 2.6, 0, 6.283); ctx.fill(); }
-  // 车身 / body
-  ctx.fillStyle = dead ? '#7a6a3a' : '#ffc21a'; roundRect(-15, -19, 28, 10, 2.5); ctx.fill();
-  ctx.fillStyle = '#e0a400'; ctx.fillRect(-15, -12, 28, 3);
-  // 驾驶室 / cab
-  ctx.fillStyle = dead ? '#7a6a3a' : '#ffcf3d'; roundRect(-13, -30, 13, 12, 2); ctx.fill();
-  ctx.fillStyle = '#8fe0ff'; roundRect(-11, -28, 9, 7, 1.5); ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillRect(-10, -27, 3, 2);
-  // 天线和信号灯 / antenna and beacon
-  ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-3, -30); ctx.lineTo(-3, -36); ctx.stroke();
-  ctx.fillStyle = dead ? '#555' : (Math.sin(clock * 6) > 0 ? '#ff4d4d' : '#ffb0b0'); ctx.beginPath(); ctx.arc(-3, -37, 1.6, 0, 6.283); ctx.fill();
-  // 机械臂与钻头 / arm and drill
-  ctx.save(); ctx.translate(8, -18); ctx.rotate(armAng);
-  ctx.fillStyle = '#e8a200'; roundRect(0, -2.5, 13, 5, 2); ctx.fill();
-  ctx.translate(13, 0);
-  ctx.fillStyle = '#b8bec9'; ctx.beginPath(); ctx.moveTo(0, -4.5); ctx.lineTo(9, 0); ctx.lineTo(0, 4.5); ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = '#7d8592'; ctx.lineWidth = 0.9;
-  const sp = digging ? (clock * 40) % 3 : 0;
-  for (let i = 0; i < 3; i++) { const xx = i * 3 + sp; ctx.beginPath(); ctx.moveTo(xx, -4.5 + xx * 0.5); ctx.lineTo(xx + 1.5, 4.5 - xx * 0.5); ctx.stroke(); }
-  ctx.restore();
-  ctx.restore();
-}
-
-/* =====================================================================
- * 阶段一：发射 / Phase 1: Launch
- * ===================================================================== */
-const LAUNCH_TARGET = 1200;   // 目标高度（m，显示为 /10 km）/ target altitude (m, shown as /10 km)
-const ROCKET_LEN = 40;         // 火箭长度（m）/ rocket length (m)
-function startMission() {
-  audio.unlock(); paused = false;
-  run = { landing: 0, sales: 0, sep: 0 };
-  startLaunch();
-}
-function startLaunch() {
-  const u = save.up;
-  L = { h: 0, v: 0, stage: 1, f1: 100 + u.fuel * 15, f1max: 100 + u.fuel * 15, f2: 60 + u.fuel * 10, f2max: 60 + u.fuel * 10,
-        needSep: false, sepT: 0, booster: null, thr: false, lifted: false, peak: 0, end: 0, failed: false, shake: 0 };
-  run.sep = 0;
-  setPhase('launch');
-}
-function separate(perfect) {
-  L.needSep = false; L.stage = 2;
-  L.booster = { y: L.h, v: L.v, rot: 0 };
-  audio.boom(0.2, 0.4); L.shake = 0.4;
-  if (perfect) { run.sep = 50; save.credits += 50; persist(); toast(t('perfectSep', 50)); unlockAch('perfectSep'); }
-  else toast(t('autoSep'));
-  for (let i = 0; i < 30; i++) addPart((Math.random() - 0.5) * 6, L.h + ROCKET_LEN * 0.55, (Math.random() - 0.5) * 30, L.v + (Math.random() - 0.5) * 20, 0.8, '#fff', 0.25);
-}
-function updateLaunch(dt) {
-  const u = save.up, g = 9.8, want = input.thrust || input.up;
-  let acc = 0; L.thr = false;
-  if (L.failed) { L.end += dt; if (L.h > 0) { L.v -= g * dt; L.h = Math.max(0, L.h + L.v * dt); } stepParts(dt, -2); audio.engine(0); if (L.end > 1.6) launchFailed(); return; }
-  if (L.stage === 1 && !L.needSep) {
-    if (want && L.f1 > 0) { L.thr = true; L.f1 = Math.max(0, L.f1 - 20 * dt); acc = 28 + u.engine * 2.5; }
-    if (L.f1 <= 0) { L.needSep = true; L.sepT = 0; toast(t('sepNow')); audio.tone(440, 0.15, 'square', 0.05); }
-  } else if (L.needSep) {
-    L.sepT += dt;
-    if (taps.has('sep') || taps.has('down')) separate(L.sepT < 0.8);
-    else if (L.sepT > 2) separate(false);
-  } else if (L.stage === 2 && want && L.f2 > 0) { L.thr = true; L.f2 = Math.max(0, L.f2 - 15 * dt); acc = 22 + u.engine * 2; }
-  if (!L.lifted && acc <= g) { L.v = 0; } else {
-    L.v += (acc - g) * dt; L.h += L.v * dt;
-    if (L.h > 1) L.lifted = true;
-    if (L.h > 30) unlockAch('liftoff');
-  }
-  if (L.h <= 0 && L.lifted) { // 坠回地面 / fell back to the ground
-    L.h = 0; L.failed = true; L.end = 0; audio.boom();
-    for (let i = 0; i < 60; i++) addPart((Math.random() - .5) * 10, Math.random() * 10, (Math.random() - .5) * 60, Math.random() * 40, 1.2, i % 2 ? '#ff9a3c' : '#ffd166', 0.5);
-    return;
-  }
-  if (L.h < 0) L.h = 0;
-  L.peak = Math.max(L.peak, L.h);
-  // 燃料耗尽且开始下坠且未到目标 → 失败 / out of fuel, falling, below target → fail
-  if (L.stage === 2 && L.f2 <= 0 && L.v < 0 && L.h < LAUNCH_TARGET) { L.failed = true; L.end = 0; }
-  if (L.h >= LAUNCH_TARGET) { audio.engine(0); audio.win(); startTransit(); return; }
-  if (L.booster) { L.booster.v -= g * dt; L.booster.y += L.booster.v * dt; L.booster.rot += dt * 0.8; }
-  L.shake = Math.max(0, L.shake - dt);
-  // 尾焰与发射烟雾 / exhaust and launch smoke
-  if (L.thr) for (let i = 0; i < 3; i++) addPart((Math.random() - 0.5) * 3, L.h - 1, (Math.random() - 0.5) * 12, L.v - 25 - Math.random() * 25, 0.5 + Math.random() * 0.4, Math.random() < 0.5 ? '#ffb347' : '#ff6a2b', 0.35 + Math.random() * 0.25);
-  if (L.h < 40 && L.thr) for (let i = 0; i < 2; i++) addPart((Math.random() - 0.5) * 30, 0.5, (Math.random() - 0.5) * 40, 3 + Math.random() * 5, 1.2, 'rgba(220,220,230,.8)', 0.8);
-  stepParts(dt, -2);
-  audio.engine(L.thr ? 1 : 0);
-}
-function launchFailed() {
-  audio.engine(0); setPhase('over');
-  showResult(t('launchFail'), [[t('launchFailWhy'), ''], [t('alt'), (L.peak / 10).toFixed(1) + ' km']],
-    [[t('retryLaunch'), () => startLaunch()], [t('shop'), () => showOverlay('ovShop'), true], [t('menu'), goMenu, true]]);
-}
-function drawRocket(cx, by, ppm, part) { // part: 'full' 整箭 | 'upper' 二级 | 'booster' 一级 / full stack | upper stage | booster
-  const w = 5 * ppm, s1 = 22 * ppm, s2 = 12 * ppm, nose = 6 * ppm;
-  ctx.save(); ctx.translate(cx, by);
-  if (part !== 'upper') { // 一级 / stage 1
-    ctx.fillStyle = '#e9edf5'; ctx.fillRect(-w / 2, -s1, w, s1);
-    ctx.fillStyle = '#c7cfdc'; ctx.fillRect(w * 0.15, -s1, w * 0.35, s1);
-    ctx.fillStyle = '#2d3a5a'; ctx.fillRect(-w / 2, -s1 * 0.55, w, s1 * 0.07);
-    ctx.fillStyle = '#d33'; ctx.fillRect(-w / 2, -s1 * 0.25, w, s1 * 0.05);
-    ctx.fillStyle = '#4a4f5c'; ctx.beginPath(); ctx.moveTo(-w / 2, 0); ctx.lineTo(-w * 0.95, ppm * 2); ctx.lineTo(-w * 0.95, -ppm * 3); ctx.lineTo(-w / 2, -ppm * 6); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(w / 2, 0); ctx.lineTo(w * 0.95, ppm * 2); ctx.lineTo(w * 0.95, -ppm * 3); ctx.lineTo(w / 2, -ppm * 6); ctx.fill();
-    ctx.fillStyle = '#333'; ctx.fillRect(-w * 0.3, 0, w * 0.6, ppm * 1.2);
-  }
-  if (part !== 'booster') { // 二级与整流罩 / stage 2 and fairing
-    const base = part === 'upper' ? 0 : -s1;
-    ctx.fillStyle = '#f4f6fb'; ctx.fillRect(-w / 2, base - s2, w, s2);
-    ctx.fillStyle = '#d0d7e3'; ctx.fillRect(w * 0.15, base - s2, w * 0.35, s2);
-    ctx.fillStyle = '#ffc21a'; ctx.font = `bold ${Math.max(5, w * 0.45)}px sans-serif`; ctx.textAlign = 'center';
-    ctx.save(); ctx.translate(0, base - s2 * 0.5); ctx.rotate(-Math.PI / 2); ctx.fillText('MOON', 0, w * 0.15); ctx.restore();
-    ctx.fillStyle = '#e9edf5'; ctx.beginPath(); ctx.moveTo(-w / 2, base - s2); ctx.quadraticCurveTo(-w / 2, base - s2 - nose * 0.8, 0, base - s2 - nose); ctx.quadraticCurveTo(w / 2, base - s2 - nose * 0.8, w / 2, base - s2); ctx.fill();
-    if (part === 'upper') { ctx.fillStyle = '#444'; ctx.fillRect(-w * 0.25, 0, w * 0.5, ppm); }
-  }
-  ctx.restore();
-}
-function drawFlame(cx, by, ppm, scale) {
-  const f = (0.8 + Math.random() * 0.4) * scale;
-  const g = ctx.createLinearGradient(0, by, 0, by + 14 * ppm * f);
-  g.addColorStop(0, '#fff6c0'); g.addColorStop(0.3, '#ffb347'); g.addColorStop(1, 'rgba(255,80,20,0)');
-  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(cx - 1.6 * ppm, by); ctx.quadraticCurveTo(cx, by + 18 * ppm * f, cx + 1.6 * ppm, by); ctx.fill();
-}
-function renderLaunch() {
-  const ppm = H * 0.3 / ROCKET_LEN;               // 像素/米 / pixels per metre
-  const rocketY0 = H * 0.84, keep = H * 0.62;      // 火箭底部屏幕位置 / rocket base screen y
-  const lift = Math.max(0, L.h * ppm - (rocketY0 - keep));
-  const groundY = rocketY0 + lift;                 // 地面屏幕位置 / ground screen y
-  const k = clamp(L.h / 900, 0, 1);
-  const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, `rgb(${lerp(70, 2, k)},${lerp(140, 4, k)},${lerp(220, 18, k)})`);
-  sky.addColorStop(1, `rgb(${lerp(170, 6, k)},${lerp(210, 10, k)},${lerp(250, 30, k)})`);
-  ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
-  drawStars(clamp((L.h - 300) / 600, 0, 1));
-  const sh = L.shake > 0 || (L.thr && L.h < 60) ? (Math.random() - 0.5) * 3 : 0;
-  ctx.save(); ctx.translate(sh, 0);
-  // 云层（视差）/ clouds (parallax)
-  for (let i = 0; i < 9; i++) {
-    const alt = 60 + i * 55, y = groundY - alt * ppm * 0.9; if (y < -60 || y > H + 60) continue;
-    const x = ((i * 137) % 100) / 100 * W;
-    ctx.fillStyle = 'rgba(255,255,255,.75)';
-    for (let j = 0; j < 4; j++) { ctx.beginPath(); ctx.ellipse(x + j * 26 - 40, y + (j % 2) * 6, 34, 14, 0, 0, 6.283); ctx.fill(); }
-  }
-  // 地面与发射塔 / ground and launch tower
-  if (groundY < H + 300) {
-    ctx.fillStyle = '#3d7a4a'; ctx.fillRect(0, groundY, W, H);
-    ctx.fillStyle = '#5c6474'; ctx.fillRect(W / 2 - 14 * ppm, groundY - 1 * ppm, 28 * ppm, 1.4 * ppm);
-    ctx.strokeStyle = '#d24'; ctx.lineWidth = Math.max(1, ppm * 0.5);
-    const tx = W / 2 + 6 * ppm; ctx.beginPath();
-    for (let y = 0; y < 38; y += 4) { ctx.moveTo(tx, groundY - y * ppm); ctx.lineTo(tx + 3 * ppm, groundY - (y + 4) * ppm); ctx.moveTo(tx + 3 * ppm, groundY - y * ppm); ctx.lineTo(tx, groundY - (y + 4) * ppm); }
-    ctx.moveTo(tx, groundY); ctx.lineTo(tx, groundY - 40 * ppm); ctx.moveTo(tx + 3 * ppm, groundY); ctx.lineTo(tx + 3 * ppm, groundY - 40 * ppm); ctx.stroke();
-  }
-  const toScr = (x, y) => [W / 2 + x * ppm, groundY - y * ppm];
-  drawParts(toScr, ppm);
-  // 脱落的一级 / the falling booster
-  if (L.booster) { const [bx, by] = toScr(0, L.booster.y); if (by < H + 300) { ctx.save(); ctx.translate(bx + (L.h - L.booster.y) * 0.05 * ppm, by); ctx.rotate(L.booster.rot * 0.3); drawRocket(0, 0, ppm, 'booster'); ctx.restore(); } }
-  if (!(L.failed && L.h <= 0)) {
-    const by = groundY - L.h * ppm, part = L.stage === 1 ? 'full' : 'upper';
-    if (L.thr) drawFlame(W / 2, by + ppm * 1.1, ppm, part === 'full' ? 1 : 0.7);
-    drawRocket(W / 2, by, ppm, part);
-  }
-  ctx.restore();
-  // 高度进度条 / altitude progress bar
-  const bh = H * 0.36, bx = W - 22, byy = H * 0.3;
-  ctx.fillStyle = 'rgba(255,255,255,.18)'; roundRect(bx, byy, 8, bh, 4); ctx.fill();
-  const p = clamp(L.h / LAUNCH_TARGET, 0, 1); if (p > 0.03) { ctx.fillStyle = '#ffd166'; roundRect(bx, byy + bh * (1 - p), 8, bh * p, 4); ctx.fill(); }
-  drawMoon(bx + 4, byy - 14, 8);
-}
-
-/* =====================================================================
- * 过场：地月转移 / Cutscene: trans-lunar transfer
- * ===================================================================== */
-function startTransit() { TR = { t: 0, dur: 4.2 }; setPhase('transit'); }
-function updateTransit(dt) { TR.t += dt; if (TR.t >= TR.dur) startLanding(); }
-function renderTransit() {
-  ctx.fillStyle = '#02030a'; ctx.fillRect(0, 0, W, H); drawStars(1, -TR.t * 30);
-  const m = Math.min(W, H), ex = W * 0.2, ey = H * 0.72, mx = W * 0.8, my = H * 0.28;
-  drawEarth(ex, ey, m * 0.13); drawMoon(mx, my, m * 0.07);
-  const cx = W * 0.25, cy = H * 0.05; // 贝塞尔控制点 / bezier control point
-  const sx0 = ex, sy0 = ey - m * 0.15, sx1 = mx - m * 0.08, sy1 = my;
-  ctx.setLineDash([4, 6]); ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(sx0, sy0); ctx.quadraticCurveTo(cx, cy, sx1, sy1); ctx.stroke(); ctx.setLineDash([]);
-  const k = clamp(TR.t / TR.dur, 0, 1), e = k * k * (3 - 2 * k);
-  const q = (a, b, c, s) => (1 - s) * (1 - s) * a + 2 * (1 - s) * s * b + s * s * c;
-  const px = q(sx0, cx, sx1, e), py = q(sy0, cy, sy1, e), px2 = q(sx0, cx, sx1, e + 0.01), py2 = q(sy0, cy, sy1, e + 0.01);
-  ctx.save(); ctx.translate(px, py); ctx.rotate(Math.atan2(py2 - py, px2 - px) + Math.PI / 2);
-  drawFlame(0, 1, 1.4, 0.6); drawRocket(0, 0, 1.4, 'upper'); ctx.restore();
-  ctx.fillStyle = '#cfe0ff'; ctx.font = '600 16px sans-serif'; ctx.textAlign = 'center';
-  ctx.fillText(t('transit') + '  ' + Math.round(e * 384400).toLocaleString() + ' km', W / 2, H * 0.88);
-}
-
-/* =====================================================================
- * 阶段二：着陆 / Phase 2: Landing
- * ===================================================================== */
-const MOON_G = 1.62; // 月球重力 m/s² / lunar gravity m/s²
-function startLanding() {
-  const u = save.up, r = mulberry32((Math.random() * 1e9) | 0);
-  const ph = [r() * 6.28, r() * 6.28, r() * 6.28];
-  const N = 241, step = 4, hs = [];
-  for (let i = 0; i < N; i++) { const x = i * step; hs.push(40 + 14 * Math.sin(x * 0.012 + ph[0]) + 5 * Math.sin(x * 0.035 + ph[1]) + 1.5 * Math.sin(x * 0.11 + ph[2])); }
-  const padX = 480 + (r() - 0.5) * 240, padW = 28, ph0 = hs[Math.round(padX / step)];
-  for (let i = 0; i < N; i++) if (Math.abs(i * step - padX) <= padW / 2 + step) hs[i] = ph0; // 压平着陆场 / flatten the pad
-  const side = r() < 0.5 ? -1 : 1, x0 = padX + side * (50 + r() * 60);
-  LD = { hs, step, padX, padW, padY: ph0, x: x0, y: ph0 + 150, vx: -side * (1 + r() * 2.5), vy: -5, a: 0,
-         fuel: 100 + u.fuel * 25, fuelMax: 100 + u.fuel * 25, thr: false, state: 'fly', t2: 0, why: '' };
-  setPhase('landing');
-}
-function groundAt(x) {
-  const i = clamp(x / LD.step, 0, LD.hs.length - 1.001), i0 = Math.floor(i), f = i - i0;
-  return lerp(LD.hs[i0], LD.hs[i0 + 1], f);
-}
-function updateLanding(dt) {
-  const u = save.up;
-  if (LD.state === 'crash') { LD.t2 += dt; stepParts(dt, -MOON_G); if (LD.t2 > 1.4) landingCrashed(); return; }
-  if (LD.state === 'landed') { LD.t2 += dt; stepParts(dt, -MOON_G); if (LD.t2 > 1.8) startMining(); return; }
-  if (input.left) LD.a -= 1.5 * dt;
-  if (input.right) LD.a += 1.5 * dt;
-  LD.a = clamp(LD.a, -1.3, 1.3);
-  LD.thr = (input.thrust || input.up) && LD.fuel > 0;
-  let ax = 0, ay = -MOON_G;
-  if (LD.thr) {
-    const T = 4.6 + u.engine * 0.45; ax = Math.sin(LD.a) * T; ay += Math.cos(LD.a) * T; LD.fuel = Math.max(0, LD.fuel - 6 * dt);
-    for (let i = 0; i < 2; i++) { const sp = 18 + Math.random() * 10; addPart(LD.x - Math.sin(LD.a) * 4, LD.y - Math.cos(LD.a) * 4, -Math.sin(LD.a) * sp + (Math.random() - .5) * 4, -Math.cos(LD.a) * sp, 0.35, Math.random() < .5 ? '#ffd27a' : '#ff8c3a', 0.6); }
-  }
-  LD.vx += ax * dt; LD.vy += ay * dt; LD.x += LD.vx * dt; LD.y += LD.vy * dt;
-  const maxX = (LD.hs.length - 1) * LD.step - 20; if (LD.x < 20 || LD.x > maxX) { LD.x = clamp(LD.x, 20, maxX); LD.vx = 0; }
-  if (LD.y > LD.padY + 260) { LD.y = LD.padY + 260; LD.vy = Math.min(0, LD.vy); }
-  // 接地判定 / touchdown check
-  const gy = groundAt(LD.x), alt = LD.y - 4 * Math.cos(LD.a) - gy;
-  if (alt < 30 && LD.thr) addPart(LD.x + (Math.random() - .5) * 16, gy + 0.3, (Math.random() - .5) * 20, Math.random() * 3, 0.8, 'rgba(200,200,200,.6)', 1.2);
-  if (alt <= 0) {
-    const slope = Math.abs(groundAt(LD.x + 3.5) - groundAt(LD.x - 3.5)) / 7;
-    let why = '';
-    if (LD.vy < -3.2) why = 'tooFast'; else if (Math.abs(LD.vx) > 2.5) why = 'tooSide'; else if (Math.abs(LD.a) > 0.26) why = 'tooTilt'; else if (slope > 0.3) why = 'tooSteep';
-    LD.t2 = 0; LD.thr = false; audio.engine(0);
-    if (why) {
-      LD.state = 'crash'; LD.why = why; audio.boom();
-      for (let i = 0; i < 80; i++) addPart(LD.x, gy + 2, (Math.random() - .5) * 30, Math.random() * 18, 1.4, ['#ffd166', '#ff7b3a', '#bbb', '#ffc21a'][i % 4], 0.5 + Math.random() * 0.6);
-    } else {
-      LD.state = 'landed'; LD.y = gy + 4; LD.a = 0;
-      const onPad = Math.abs(LD.x - LD.padX) <= LD.padW / 2 - 2, soft = LD.vy > -1;
-      const bonus = 80 + Math.round(LD.fuel) + (onPad ? 120 : 0) + (soft ? 60 : 0);
-      LD.vx = LD.vy = 0;
-      run.landing = bonus; save.credits += bonus; persist();
-      toast(t('landed') + ' ' + t('landBonus', bonus)); audio.win();
-      unlockAch('landed'); if (onPad) unlockAch('pad'); if (soft) unlockAch('soft');
-      for (let i = 0; i < 30; i++) addPart(LD.x + (Math.random() - .5) * 10, gy + 0.2, (Math.random() - .5) * 14, Math.random() * 3, 1, 'rgba(210,210,210,.7)', 1.2);
-    }
-    return;
-  }
-  stepParts(dt, -MOON_G);
-  audio.engine(LD.thr ? 0.7 : 0);
-}
-function landingCrashed() {
-  setPhase('over');
-  showResult(t('crash'), [[t(LD.why), '']], [[t('retryLand'), () => startLanding()], [t('menu'), goMenu, true]]);
-}
-// 着陆器（原创矢量画）/ Lander (original vector art); (x,y) = 中心 / centre, s = 像素/米 / px per metre
-function drawLander(x, y, s, a, withDigger = true) {
-  ctx.save(); ctx.translate(x, y); ctx.rotate(a);
-  // 着陆腿 / legs
-  ctx.strokeStyle = '#c9ccd3'; ctx.lineWidth = Math.max(1.2, s * 0.35);
-  ctx.beginPath(); ctx.moveTo(-2.5 * s, 0.5 * s); ctx.lineTo(-4.2 * s, 4 * s); ctx.moveTo(2.5 * s, 0.5 * s); ctx.lineTo(4.2 * s, 4 * s); ctx.stroke();
-  ctx.fillStyle = '#c9ccd3'; ctx.fillRect(-5 * s, 3.8 * s, 1.8 * s, 0.4 * s); ctx.fillRect(3.2 * s, 3.8 * s, 1.8 * s, 0.4 * s);
-  // 下降级（金箔）/ descent stage (gold foil)
-  const g = ctx.createLinearGradient(-3 * s, 0, 3 * s, 0); g.addColorStop(0, '#b8860b'); g.addColorStop(0.5, '#ffd56b'); g.addColorStop(1, '#a8740a');
-  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(-3.2 * s, -1 * s); ctx.lineTo(3.2 * s, -1 * s); ctx.lineTo(2.6 * s, 1.6 * s); ctx.lineTo(-2.6 * s, 1.6 * s); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#555'; ctx.fillRect(-0.8 * s, 1.6 * s, 1.6 * s, 0.9 * s);
-  // 上升级 + 货舱 / ascent stage + cargo bay
-  ctx.fillStyle = '#e3e6ec'; roundRect(-2.6 * s, -4.4 * s, 5.2 * s, 3.5 * s, 0.6 * s); ctx.fill();
-  ctx.fillStyle = '#1b2440'; ctx.beginPath(); ctx.arc(-1.2 * s, -3 * s, 0.7 * s, 0, 6.283); ctx.fill();
-  if (withDigger) drawDigger(1.2 * s, -1.05 * s, 2.4 * s, 1, 0.3);
-  ctx.strokeStyle = '#ddd'; ctx.lineWidth = Math.max(1, s * 0.15); ctx.beginPath(); ctx.moveTo(0, -4.4 * s); ctx.lineTo(0, -5.6 * s); ctx.stroke();
-  ctx.restore();
-}
-function renderLanding() {
-  const ppm = Math.min(W, H) / 105;
-  const camX = LD.x, camY = Math.min(LD.y, groundAt(LD.x) + (H * 0.4) / ppm);
-  const toScr = (x, y) => [W / 2 + (x - camX) * ppm, H * 0.45 - (y - camY) * ppm];
-  ctx.fillStyle = '#03040b'; ctx.fillRect(0, 0, W, H); drawStars(1, -camX * 0.3);
-  drawEarth(W * 0.8, H * 0.2, Math.min(W, H) * 0.07);
-  // 远山 / distant hills
-  const hillBase = toScr(0, LD.padY)[1];
-  ctx.fillStyle = '#26272c'; ctx.beginPath(); ctx.moveTo(0, H);
-  for (let sx = 0; sx <= W + 20; sx += 20) { const wx = camX * 1.2 + sx * 0.6; ctx.lineTo(sx, hillBase - 30 - 25 * Math.sin(wx * 0.02) - 12 * Math.sin(wx * 0.05)); }
-  ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
-  // 地形 / terrain
-  const x0 = camX - W / 2 / ppm - 8, x1 = camX + W / 2 / ppm + 8;
-  const grd = ctx.createLinearGradient(0, toScr(0, LD.padY + 20)[1], 0, H + 50); grd.addColorStop(0, '#a9a7a2'); grd.addColorStop(1, '#4b4a47');
-  ctx.fillStyle = grd; ctx.beginPath(); ctx.moveTo(toScr(x0, 0)[0], H + 10);
-  for (let x = Math.floor(x0 / LD.step) * LD.step; x <= x1 + LD.step; x += LD.step) { const [sx, sy] = toScr(x, groundAt(x)); ctx.lineTo(sx, sy); }
-  ctx.lineTo(toScr(x1 + LD.step, 0)[0], H + 10); ctx.closePath(); ctx.fill();
-  // 陨石坑 / craters
-  ctx.fillStyle = 'rgba(60,60,58,.35)';
-  for (let x = Math.floor(x0 / 37) * 37; x <= x1; x += 37) { if (Math.abs(x - LD.padX) < 25) continue; const [sx, sy] = toScr(x, groundAt(x)); ctx.beginPath(); ctx.ellipse(sx, sy + 6 + (x % 5), 4 + (x % 7) * 1.4, 2 + (x % 3), 0, 0, 6.283); ctx.fill(); }
-  // 着陆场 / landing pad
-  const [pl, py] = toScr(LD.padX - LD.padW / 2, LD.padY), [pr] = toScr(LD.padX + LD.padW / 2, LD.padY);
-  ctx.fillStyle = '#6d7180'; ctx.fillRect(pl, py, pr - pl, Math.max(2, ppm * 0.6));
-  ctx.fillStyle = Math.sin(clock * 5) > 0 ? '#5cff8a' : '#1e8f45';
-  for (let i = 0; i <= 4; i++) { ctx.beginPath(); ctx.arc(lerp(pl, pr, i / 4), py - 2, Math.max(2, ppm * 0.4), 0, 6.283); ctx.fill(); }
-  drawParts(toScr, ppm);
-  if (LD.state !== 'crash') {
-    const [lx, ly] = toScr(LD.x, LD.y);
-    if (LD.thr) { ctx.save(); ctx.translate(lx, ly); ctx.rotate(LD.a); drawFlame(0, 2.4 * ppm, ppm * 0.7, 0.8); ctx.restore(); }
-    drawLander(lx, ly, ppm, LD.a);
-  }
-  // 着陆场方向指示 / pad direction indicator
-  const [psx] = toScr(LD.padX, LD.padY);
-  if (psx < 0 || psx > W) { const left = psx < 0; ctx.fillStyle = '#5cff8a'; ctx.font = '700 24px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(left ? '◀ H' : 'H ▶', left ? 34 : W - 34, H * 0.5); }
-}
-
-/* =====================================================================
- * 阶段三：采矿 / Phase 3: Mining
- * ===================================================================== */
-const COLS = 44, ROWS = 76;
-const EMPTY = 0, REG = 1, ROCK = 2, ICE = 3, FE = 4, TI = 5, HE3 = 6, BED = 7;
-// 硬度 / 售价 / 颜色 — hardness / sale value / colours
-const TILE = [
-  null,
-  { hard: 1.0, val: 0, base: '#8d8983', dot: '#a8a49d' },                   // 月壤 regolith
-  { hard: 2.2, val: 0, base: '#55524f', dot: '#6c6966' },                   // 玄武岩 basalt
-  { hard: 1.3, val: 15, base: '#8d8983', dot: '#a8a49d', gem: '#a8eeff' },  // 水冰 water ice
-  { hard: 2.0, val: 25, base: '#6a625b', dot: '#7d746b', gem: '#d0753c' },  // 铁 iron
-  { hard: 3.0, val: 60, base: '#55524f', dot: '#6c6966', gem: '#dfe8ff' },  // 钛 titanium
-  { hard: 2.6, val: 200, base: '#4a4746', dot: '#5c5957', gem: '#ffe066' }, // 氦-3 helium-3
-  { hard: 999, val: 0, base: '#262423', dot: '#34312f' }                    // 基岩 bedrock
-];
-const LANDER_C = 4; // 着陆器所在列 / lander column
-// 程序生成矿区 / procedurally generate the mine
-function genMine(seed) {
-  const r = mulberry32(seed), grid = new Uint8Array(COLS * ROWS), surf = [];
-  const ph = r() * 6.28;
-  for (let c = 0; c < COLS; c++) surf.push(9 + Math.round(1.6 * Math.sin(c * 0.33 + ph) + r() * 0.9));
-  for (let c = 1; c <= 7; c++) surf[c] = surf[LANDER_C]; // 着陆区压平 / flatten the landing area
-  for (let c = 0; c < COLS; c++) for (let y = 0; y < ROWS; y++) {
-    let v = EMPTY; const d = y - surf[c];
-    if (d >= 0) v = d < 5 ? REG : (r() < Math.min(0.55, 0.12 + d * 0.012) ? ROCK : REG);
-    if (c === 0 || c === COLS - 1 || y === ROWS - 1) v = BED;
-    grid[y * COLS + c] = v;
-  }
-  const vein = (type, count, minD, minL, maxL) => { // 随机游走生成矿脉 / random-walk ore veins
-    for (let i = 0; i < count; i++) {
-      let c = 1 + Math.floor(r() * (COLS - 2)); let y = surf[c] + minD + Math.floor(r() * (ROWS - 2 - surf[c] - minD));
-      const len = minL + Math.floor(r() * (maxL - minL + 1));
-      for (let j = 0; j < len; j++) {
-        if (c > 0 && c < COLS - 1 && y < ROWS - 1 && y >= surf[c] + minD) grid[y * COLS + c] = type;
-        const dir = Math.floor(r() * 4); c += [1, -1, 0, 0][dir]; y += [0, 0, 1, -1][dir];
-      }
-    }
-  };
-  vein(ICE, 36, 1, 3, 6); vein(FE, 30, 6, 3, 6); vein(TI, 18, 20, 2, 5); vein(HE3, 10, 34, 1, 3);
-  // 着陆点附近保证有浅层矿，新手好上手 / guarantee shallow ore near the lander for new players
-  for (let i = 0; i < 3; i++) {
-    const c = 7 + Math.floor(r() * 9), y = surf[c] + 1 + Math.floor(r() * 3), tp = i === 2 ? FE : ICE;
-    grid[y * COLS + c] = tp; if (c + 1 < COLS - 1) grid[y * COLS + c + 1] = tp;
-  }
-  // 地下空洞 / underground caves
-  for (let i = 0; i < 7; i++) {
-    let c = 3 + Math.floor(r() * (COLS - 6)), y = surf[c] + 12 + Math.floor(r() * (ROWS - surf[c] - 16));
-    for (let j = 0; j < 14; j++) { if (y < ROWS - 1) grid[y * COLS + c] = EMPTY; c = clamp(c + Math.floor(r() * 3) - 1, 1, COLS - 2); y += r() < 0.3 ? (r() < .5 ? 1 : -1) : 0; }
-  }
-  return { grid, surf };
-}
-function startMining() {
-  const u = save.up, g = genMine((Math.random() * 1e9) | 0);
-  const batMax = 100 + u.battery * 30;
-  M = { grid: g.grid, surf: g.surf, x: LANDER_C + 0.5, y: g.surf[LANDER_C], vx: 0, vy: 0, face: 1,
-        dig: null, cargo: [], cap: 6 + u.cargo * 3, bat: batMax, batMax, dead: false, deadT: 0, sellT: 0, maxDepth: 0, lowWarned: false, jet: false };
-  setPhase('mining');
-}
-const tileAt = (c, y) => (c < 0 || c >= COLS || y >= ROWS) ? BED : (y < 0 ? EMPTY : M.grid[y * COLS + c]);
-const solid = (c, y) => tileAt(c, y) !== EMPTY;
-const HW = 0.4, HH = 0.72; // 挖掘机半宽、高（格）/ excavator half-width & height (tiles); M.y = 底部 / bottom
-function moveX(dx) {
-  M.x += dx; const r0 = Math.floor(M.y - HH + 0.02), r1 = Math.floor(M.y - 0.02);
-  if (dx > 0) { const c = Math.floor(M.x + HW); for (let y = r0; y <= r1; y++) if (solid(c, y)) { M.x = c - HW - 0.0001; M.vx = 0; return true; } }
-  else if (dx < 0) { const c = Math.floor(M.x - HW); for (let y = r0; y <= r1; y++) if (solid(c, y)) { M.x = c + 1 + HW + 0.0001; M.vx = 0; return true; } }
-  return false;
-}
-function moveY(dy) {
-  M.y += dy; const c0 = Math.floor(M.x - HW + 0.02), c1 = Math.floor(M.x + HW - 0.02);
-  if (dy > 0) { const y = Math.floor(M.y); for (let c = c0; c <= c1; c++) if (solid(c, y)) { M.y = y; M.vy = 0; return 1; } }
-  else if (dy < 0) { const y = Math.floor(M.y - HH); for (let c = c0; c <= c1; c++) if (solid(c, y)) { M.y = y + 1 + HH; M.vy = 0; return -1; } }
-  return 0;
-}
-function onGround() {
-  if (M.y - Math.floor(M.y) > 0.02) return false;
-  const y = Math.floor(M.y + 0.01), c0 = Math.floor(M.x - HW + 0.02), c1 = Math.floor(M.x + HW - 0.02);
-  for (let c = c0; c <= c1; c++) if (solid(c, y)) return true;
-  return false;
-}
-const atLander = () => !!M && Math.abs(M.x - (LANDER_C + 0.5)) < 1.7 && M.y <= M.surf[LANDER_C] + 0.05;
-function tryDig(c, y, dir) {
-  const tp = tileAt(c, y);
-  if (tp === EMPTY) return false;
-  if (tp === BED) { toastOnce('bed', t('bedrock')); return false; }
-  if (TILE[tp].val > 0 && M.cargo.length >= M.cap) { toastOnce('full', t('cargoFull')); return false; }
-  M.dig = { c, y, dir, prog: 0, need: 0.32 * TILE[tp].hard / (1 + 0.4 * save.up.drill) };
-  return true;
-}
-function finishDig() {
-  const { c, y } = M.dig, tp = tileAt(c, y); M.grid[y * COLS + c] = EMPTY; M.dig = null;
-  for (let i = 0; i < 10; i++) addPart(c + 0.5 + (Math.random() - .5) * .8, y + 0.5 + (Math.random() - .5) * .8, (Math.random() - .5) * 4, -Math.random() * 3, 0.6, TILE[tp].gem || TILE[tp].dot, 0.08);
-  if (TILE[tp].val > 0) {
-    M.cargo.push(tp); audio.tone(520 + tp * 90, 0.09, 'triangle', 0.06);
-    floats.push({ x: c + 0.5, y: y, text: ORE_NAMES[save.lang][tp], t: 1.2, color: TILE[tp].gem });
-    if (tp === HE3) unlockAch('he3');
-  } else audio.tone(140, 0.06, 'sawtooth', 0.04);
-}
-function updateMining(dt) {
-  const u = save.up, G = 9; // 采矿重力（格/s²）/ mining gravity (tiles/s²)
-  for (let i = floats.length - 1; i >= 0; i--) { floats[i].t -= dt; floats[i].y -= dt * 0.8; if (floats[i].t <= 0) floats.splice(i, 1); }
-  stepParts(dt, 6);
-  if (M.dead) { M.deadT += dt; audio.engine(0); if (M.deadT > 1.6) endRun(true); return; }
-  const dir = (input.right ? 1 : 0) - (input.left ? 1 : 0);
-  const grounded = onGround();
-  let drain = 0.25;
-  if (M.dig) {
-    // 持续按住才继续挖 / keep digging only while the key is held
-    const held = M.dig.dir === 'down' ? input.down : (M.dig.dir === 1 ? input.right : input.left);
-    if (!held) M.dig = null;
-    else {
-      M.dig.prog += dt; drain += 1.6;
-      if (M.dig.dir === 'down') M.x += (M.dig.c + 0.5 - M.x) * Math.min(1, dt * 12);
-      if (Math.random() < dt * 14) { audio.dig(); addPart(M.dig.c + 0.5 + (Math.random() - .5) * .6, M.dig.y + (M.dig.dir === 'down' ? 0.05 : 0.5), (Math.random() - .5) * 3, -1 - Math.random() * 2, 0.4, TILE[tileAt(M.dig.c, M.dig.y)].dot, 0.06); }
-      if (M.dig.prog >= M.dig.need) finishDig();
-    }
-  }
-  M.jet = false;
-  if (!M.dig) {
-    if (dir) { M.face = dir; M.vx = dir * (grounded ? 3.4 : 2.4); drain += 0.6; } else M.vx = grounded ? 0 : M.vx * (1 - dt * 2);
-    // 推进器 / jet thruster
-    M.jet = (input.up || input.thrust) && M.bat > 0;
-    if (M.jet) {
-      M.vy -= (17 + u.engine * 1.6) * dt; M.vy = Math.max(M.vy, -5); drain += 2.4;
-      addPart(M.x - M.face * 0.25, M.y - 0.05, (Math.random() - .5) * 1.5, 3 + Math.random() * 2, 0.3, Math.random() < .5 ? '#9be7ff' : '#ffffff', 0.07);
-    }
-    if (grounded && input.down) tryDig(Math.floor(M.x), Math.floor(M.y), 'down');
-    else if (grounded && dir) {
-      const c = Math.floor(M.x + dir * (HW + 0.06)), y = Math.floor(M.y - 0.35), cMe = Math.floor(M.x);
-      if (solid(c, y)) {
-        if (!solid(c, y - 1) && !solid(cMe, y - 1)) M.vy = -Math.sqrt(2 * G * 1.25); // 自动爬上一格台阶 / auto step-up one tile
-        else tryDig(c, y, dir);
-      }
-    }
-  }
-  if (!(M.dig && M.dig.dir === 'down')) M.vy = Math.min(M.vy + G * dt, 11);
-  moveX(M.vx * dt); moveY(M.vy * dt);
-  if (M.y - HH < -6) { M.y = -6 + HH; M.vy = Math.max(0, M.vy); } // 天空上限 / sky ceiling
-  // 电量 / battery
-  M.bat = Math.max(0, M.bat - drain * dt);
-  if (M.bat < M.batMax * 0.2 && !M.lowWarned) { M.lowWarned = true; toast(t('lowBat')); audio.tone(300, 0.2, 'square', 0.06); }
-  if (M.bat <= 0 && !atLander()) { M.dead = true; M.deadT = 0; M.dig = null; toast(t('batDead')); audio.boom(0.15, 0.5); }
-  // 着陆器：卸货与充电 / lander: unload & recharge
-  if (atLander()) {
-    M.bat = Math.min(M.batMax, M.bat + 45 * dt); if (M.bat > M.batMax * 0.3) M.lowWarned = false;
-    M.sellT -= dt;
-    if (M.cargo.length && M.sellT <= 0) {
-      const tp = M.cargo.shift(), v = TILE[tp].val; M.sellT = 0.14;
-      run.sales += v; save.credits += v; persist(); audio.coin();
-      floats.push({ x: LANDER_C + 0.5, y: M.surf[LANDER_C] - 3, text: t('sold', v), t: 1, color: '#ffd166' });
-      if (run.landing + run.sales + run.sep >= 1000) unlockAch('rich');
-    }
-  }
-  const depth = Math.floor(M.y) - M.surf[LANDER_C];
-  if (depth > M.maxDepth) { M.maxDepth = depth; if (depth >= 30) unlockAch('deep'); }
-  audio.engine(M.jet ? 0.35 : (M.dig ? 0.15 : 0));
-}
-// 预渲染格子贴图（按 DPR 缓存）/ pre-render tile sprites (cached per DPR)
-function tileSprite(tp, variant) {
-  const key = tp + '_' + variant; if (tileCache[key]) return tileCache[key];
-  const px = Math.ceil(TS * DPR), c = document.createElement('canvas'); c.width = c.height = px;
-  const g = c.getContext('2d'), r = mulberry32(tp * 977 + variant * 131 + 7), info = TILE[tp];
-  g.fillStyle = info.base; g.fillRect(0, 0, px, px);
-  g.fillStyle = info.dot; for (let i = 0; i < 9; i++) { const s = px * (0.05 + r() * 0.09); g.beginPath(); g.arc(r() * px, r() * px, s, 0, 6.283); g.fill(); }
-  g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(0, px * 0.92, px, px * 0.08); g.fillRect(px * 0.92, 0, px * 0.08, px);
-  g.fillStyle = 'rgba(255,255,255,.06)'; g.fillRect(0, 0, px, px * 0.06);
-  if (info.gem) { // 矿物晶体 / ore crystals
-    const n = tp === HE3 ? 3 : 4;
-    for (let i = 0; i < n; i++) {
-      const cx = px * (0.2 + r() * 0.6), cy = px * (0.2 + r() * 0.6), s = px * (0.1 + r() * 0.08);
-      g.fillStyle = info.gem; g.beginPath(); g.moveTo(cx, cy - s); g.lineTo(cx + s * 0.8, cy); g.lineTo(cx, cy + s); g.lineTo(cx - s * 0.8, cy); g.closePath(); g.fill();
-      g.fillStyle = 'rgba(255,255,255,.55)'; g.beginPath(); g.moveTo(cx, cy - s); g.lineTo(cx + s * 0.3, cy - s * 0.2); g.lineTo(cx - s * 0.2, cy - s * 0.1); g.fill();
-    }
-    if (tp === HE3) { g.strokeStyle = 'rgba(255,240,150,.5)'; g.lineWidth = px * 0.04; g.strokeRect(px * 0.06, px * 0.06, px * 0.88, px * 0.88); }
-  }
-  if (tp === BED) { g.strokeStyle = 'rgba(0,0,0,.4)'; g.lineWidth = px * 0.05; g.beginPath(); g.moveTo(0, px * 0.3); g.lineTo(px * 0.5, px * 0.6); g.lineTo(px, px * 0.4); g.stroke(); }
-  tileCache[key] = c; return c;
-}
-function renderMining() {
-  const sy0 = M.surf[LANDER_C];
-  let camX = M.x * TS - W / 2, camY = (M.y - 0.5) * TS - H * 0.45;
-  camX = COLS * TS <= W ? (COLS * TS - W) / 2 : clamp(camX, 0, COLS * TS - W);
-  camY = clamp(camY, -6 * TS, ROWS * TS - H + TS * 3);
-  const toScr = (x, y) => [x * TS - camX, y * TS - camY];
-  // 天空 / sky
-  ctx.fillStyle = '#03040b'; ctx.fillRect(0, 0, W, H);
-  drawStars(1, -camX * 0.2);
-  const skyBottom = (sy0 - 3) * TS - camY;
-  if (skyBottom > -TS * 4) drawEarth(W * 0.72, Math.max(130, skyBottom - TS * 2.5), Math.min(W, H) * 0.07); // 避开顶部按钮 / keep clear of the top buttons
-  // 地面格子 / ground tiles
-  const c0 = Math.max(0, Math.floor(camX / TS)), c1 = Math.min(COLS - 1, Math.ceil((camX + W) / TS));
-  const r0 = Math.max(0, Math.floor(camY / TS)), r1 = Math.min(ROWS - 1, Math.ceil((camY + H) / TS));
-  for (let c = c0; c <= c1; c++) {
-    const sTop = M.surf[c];
-    for (let y = Math.max(r0, sTop); y <= r1; y++) {
-      const tp = M.grid[y * COLS + c], [sx, sy] = toScr(c, y);
-      if (tp === EMPTY) { ctx.fillStyle = '#1d1b1a'; ctx.fillRect(sx, sy, TS + 0.5, TS + 0.5); continue; }
-      ctx.drawImage(tileSprite(tp, (c * 7 + y * 13) % 3), sx, sy, TS + 0.5, TS + 0.5);
-      if (tileAt(c, y - 1) === EMPTY) { ctx.fillStyle = y === sTop ? 'rgba(225,222,214,.55)' : 'rgba(220,218,210,.2)'; ctx.fillRect(sx, sy, TS + 0.5, Math.max(2, TS * 0.08)); }
-    }
-  }
-  // 挖掘进度裂纹 / dig progress cracks
-  if (M.dig) {
-    const [sx, sy] = toScr(M.dig.c, M.dig.y), p = clamp(M.dig.prog / M.dig.need, 0, 1);
-    ctx.strokeStyle = 'rgba(0,0,0,.65)'; ctx.lineWidth = 2; ctx.beginPath();
-    const n = Math.ceil(p * 5); for (let i = 0; i < n; i++) { const a = i * 1.3; ctx.moveTo(sx + TS / 2, sy + TS / 2); ctx.lineTo(sx + TS / 2 + Math.cos(a) * TS * 0.45 * p, sy + TS / 2 + Math.sin(a) * TS * 0.45 * p); }
-    ctx.stroke();
-  }
-  // 着陆器 / the lander
-  const [lx, ly] = toScr(LANDER_C + 0.5, sy0);
-  if (atLander()) { // 卸货区高亮 / unloading zone glow
-    ctx.strokeStyle = `rgba(92,255,138,${0.55 + 0.35 * Math.sin(clock * 6)})`; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(lx - TS * 1.6, ly - 1); ctx.lineTo(lx + TS * 1.6, ly - 1); ctx.stroke();
-  }
-  drawLander(lx, ly - TS * 0.84, TS * 0.2, 0, false); // 脚在地面 / feet on the ground
-  // 挖掘机 / excavator
-  const [mx, my] = toScr(M.x, M.y);
-  let arm = -0.15; if (M.dig) arm = M.dig.dir === 'down' ? 1.25 + Math.sin(clock * 30) * 0.06 : 0.2 + Math.sin(clock * 30) * 0.06;
-  if (M.jet) { ctx.fillStyle = 'rgba(155,231,255,.75)'; ctx.beginPath(); ctx.moveTo(mx - TS * 0.15, my - TS * 0.05); ctx.lineTo(mx, my + TS * (0.3 + Math.random() * 0.2)); ctx.lineTo(mx + TS * 0.15, my - TS * 0.05); ctx.fill(); }
-  drawDigger(mx, my, TS * 0.95, M.face, arm, !!M.dig, M.dead);
-  drawParts(toScr, TS);
-  // 深度变暗 + 车灯光圈 / darkness by depth + headlight
-  const dark = clamp((M.y - sy0) / 40, 0, 0.82);
-  if (dark > 0.02) {
-    const gr = ctx.createRadialGradient(mx, my - TS * 0.4, TS * 1.2, mx, my - TS * 0.4, TS * 5.5);
-    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, `rgba(0,0,0,${dark})`);
-    ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
-  }
-  // 漂浮文字 / floating texts
-  ctx.textAlign = 'center'; ctx.font = `700 ${Math.max(12, TS * 0.36)}px sans-serif`;
-  for (const f of floats) { const [fx, fy] = toScr(f.x, f.y); ctx.globalAlpha = clamp(f.t, 0, 1); ctx.fillStyle = '#000'; ctx.fillText(f.text, fx + 1, fy + 1); ctx.fillStyle = f.color || '#fff'; ctx.fillText(f.text, fx, fy); }
-  ctx.globalAlpha = 1;
-}
-function endRun(dead) {
-  if (!dead) { // 结束时卖掉剩余货物 / sell remaining cargo on exit
-    for (const tp of M.cargo) { run.sales += TILE[tp].val; save.credits += TILE[tp].val; }
-    M.cargo = [];
-  }
-  const total = run.landing + run.sales + run.sep;
-  const isHigh = total > save.high; if (isHigh) save.high = total;
-  save.stats.runs++; if (save.stats.runs >= 5) unlockAch('veteran');
-  if (total >= 1000) unlockAch('rich');
-  persist(); audio.engine(0); setPhase('over');
-  const rows = [[t('sepB'), '+' + run.sep], [t('landingB'), '+' + run.landing], [t('sales'), '+' + run.sales], [t('runEarned'), String(total), 'gold'], [t('best'), String(save.high)], [t('credits'), String(save.credits), 'gold']];
-  if (dead) rows.unshift([t('batDead'), '']);
-  if (isHigh && total > 0) rows.unshift([t('newHigh'), '', 'gold']);
-  showResult(t('runOver'), rows, [[t('shop'), () => showOverlay('ovShop')], [t('again'), startMission, true], [t('menu'), goMenu, true]]);
-  if (!dead) audio.win();
-}
-
-/* =====================================================================
- * 主菜单背景动画 / Main-menu background animation
- * ===================================================================== */
-function renderMenuBg() {
-  ctx.fillStyle = '#03040b'; ctx.fillRect(0, 0, W, H); drawStars(1, clock * 6);
-  const m = Math.min(W, H), R = Math.max(W, H) * 0.55, my = H + R * 0.55;
-  drawEarth(W * 0.2, H * 0.14, m * 0.1);
-  drawMoon(W / 2, my, R);
-  const a = Math.sin(clock * 0.4) * 0.5; // 挖掘机沿月面来回开 / the excavator drives along the lunar surface
-  ctx.save(); ctx.translate(W / 2, my); ctx.rotate(a); drawDigger(0, -R + 2, m * 0.14, Math.cos(clock * 0.4) > 0 ? 1 : -1, -0.1); ctx.restore();
-}
-
-// ===== HUD 文本 / HUD text =====
-let hudT = 0, hudLast = '';
-function bar(p, color) { return `<span class="bar"><i style="width:${(clamp(p, 0, 1) * 100).toFixed(0)}%;background:${color}"></i></span>`; }
-function updateHUD(force) {
-  let s = '';
-  if (phase === 'launch' && L) {
-    const f = L.stage === 1 ? L.f1 / L.f1max : L.f2 / L.f2max;
-    s = `${t('alt')} ${(L.h / 10).toFixed(1)} / ${LAUNCH_TARGET / 10} km<br>${t('spd')} ${(L.v * 36).toFixed(0)} km/h<br>${t('stage')} ${L.stage} · ${t('fuel')} ${bar(f, f < 0.2 ? '#ff7b7b' : '#7dff9a')}<br>💰 ${save.credits}`;
-  } else if (phase === 'landing' && LD) {
-    const alt = Math.max(0, LD.y - 4 * Math.cos(LD.a) - groundAt(LD.x));
-    const okV = LD.vy > -3.2, okH = Math.abs(LD.vx) <= 2.5, okA = Math.abs(LD.a) <= 0.26;
-    s = `${t('alt')} ${alt.toFixed(0)} m<br>${t('vs')} <span class="${okV ? 'ok' : 'bad'}">${LD.vy.toFixed(1)} m/s</span><br>${t('hs')} <span class="${okH ? 'ok' : 'bad'}">${LD.vx.toFixed(1)} m/s</span><br>${t('ang')} <span class="${okA ? 'ok' : 'bad'}">${(LD.a * 57.3).toFixed(0)}°</span><br>${t('fuel')} ${bar(LD.fuel / LD.fuelMax, LD.fuel < 20 ? '#ff7b7b' : '#7dff9a')}`;
-  } else if (phase === 'mining' && M) {
-    const bp = M.bat / M.batMax, depth = Math.max(0, Math.floor(M.y) - M.surf[LANDER_C]);
-    s = `${t('battery')} ${bar(bp, bp < 0.2 ? '#ff7b7b' : bp < 0.45 ? '#ffd166' : '#7dff9a')} ${(bp * 100).toFixed(0)}%<br>${t('cargo')} <span class="${M.cargo.length >= M.cap ? 'warn' : ''}">${M.cargo.length}/${M.cap}</span> · ${t('depth')} ${depth} m<br>💰 ${save.credits}${atLander() ? '<br><span class="ok">' + t('atLander') + '</span>' : ''}`;
-  }
-  if (force || s !== hudLast) { $('stats').innerHTML = s; hudLast = s; }
-  // 分离按钮：只在一级时显示，燃料耗尽时闪烁 / staging button: shown during stage 1, flashing at burnout
-  const sepBtn = document.querySelector('.cb[data-k="sep"]');
-  sepBtn.classList.toggle('flash', phase === 'launch' && !!L && L.needSep);
-  sepBtn.classList.toggle('hide', !(phase === 'launch' && L && L.stage === 1));
-}
-
-// ===== 暂停 / 静音 / 语言 / Pause, mute, language =====
-function togglePause(force) {
-  if (!CONTROL_SETS[phase] && phase !== 'transit') return;
-  paused = force !== undefined ? force : !paused;
-  clearInput(); audio.engine(0);
-  showOverlay(paused ? 'ovPause' : null);
-}
-function toggleMute() { save.muted = !save.muted; persist(); $('btnMute').textContent = save.muted ? '🔇' : '🔊'; audio.unlock(); audio.engine(0); }
-$('btnPause').onclick = () => togglePause();
-$('btnResume').onclick = () => togglePause(false);
-$('btnQuit').onclick = () => { paused = false; goMenu(); };
-$('btnMute').onclick = toggleMute;
-$('btnLang').onclick = () => { save.lang = save.lang === 'zh' ? 'en' : 'zh'; persist(); applyLang(); updateHUD(true); };
-$('btnStart').onclick = () => { audio.unlock(); audio.click(); startMission(); };
-$('btnShop').onclick = () => { audio.unlock(); audio.click(); showOverlay('ovShop'); };
-$('btnAch').onclick = () => { audio.unlock(); audio.click(); showOverlay('ovAch'); };
-$('shopBack').onclick = () => { audio.click(); goMenu(); };
-$('shopStart').onclick = () => { audio.unlock(); audio.click(); startMission(); };
-$('achBack').onclick = () => { audio.click(); goMenu(); };
-$('skip').onclick = () => { if (phase === 'transit') startLanding(); };
-$('btnEnd').onclick = () => { if (phase !== 'mining' || M.dead) return; if (!atLander()) { toast(t('endNeed')); return; } endRun(false); };
-// 切到后台自动暂停 / auto-pause when the tab is hidden
-document.addEventListener('visibilitychange', () => { if (document.hidden) { if (CONTROL_SETS[phase] || phase === 'transit') togglePause(true); audio.engine(0); } });
-window.addEventListener('blur', () => clearInput());
-
-// ===== 主循环 / Main loop =====
-let last = performance.now();
-function frame(now) {
-  const dt = Math.min(0.033, Math.max(0, (now - last) / 1000)); last = now;
-  if (!paused) {
-    clock += dt;
-    if (phase === 'launch') updateLaunch(dt);
-    else if (phase === 'transit') updateTransit(dt);
-    else if (phase === 'landing') updateLanding(dt);
-    else if (phase === 'mining') updateMining(dt);
-  }
-  taps.clear();
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  if (scene === 'launch' && L) renderLaunch();
-  else if (scene === 'transit' && TR) renderTransit();
-  else if (scene === 'landing' && LD) renderLanding();
-  else if (scene === 'mining' && M) renderMining();
-  else renderMenuBg();
-  if (hintT > 0 && !paused) { hintT -= dt; if (hintT <= 0) $('hint').textContent = ''; }
-  hudT += dt; if (hudT > 0.1) { hudT = 0; updateHUD(); }
-  requestAnimationFrame(frame);
-}
-
-// ===== 启动 / Boot =====
-$('btnMute').textContent = save.muted ? '🔇' : '🔊';
-applyLang(); setPhase('menu'); showOverlay('ovMenu');
-requestAnimationFrame(frame);
-// 离线支持（PWA）/ Offline support (PWA)
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => { /* 忽略 / ignore */ }));
-}
-// 测试钩子（读取状态 + 输入）/ Test hook (read state + input)
-window.MoonMiner = { get phase() { return phase; }, get L() { return L; }, get LD() { return LD; }, get M() { return M; }, input, taps, get save() { return save; }, DIGGER_NAME, GAME_NAME };
-</script>
+<!-- moon-miner v3 capsule-nft — 原创代码，MIT / original code, MIT. 设定来源 / setting source: github.com/yydemo/star-chain-earn-mine -->
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/core.js"></script>
+<script src="js/orbit.js"></script>
+<script src="js/vessel.js"></script>
+<script src="js/flight.js"></script>
+<script src="js/mining.js"></script>
+<script src="js/builder.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

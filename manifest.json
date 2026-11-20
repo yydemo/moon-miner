@@ -1,7 +1,7 @@
 {
-  "name": "月球挖矿 Moon Miner",
+  "name": "月球挖矿 Moon Miner · 星链挖矿",
   "short_name": "Moon Miner",
-  "description": "发射火箭、登月、驾驶挖掘机采矿 / Launch a rocket, land on the Moon and mine with a little excavator",
+  "description": "按 star-chain-earn-mine 设计：组装火箭、轨道飞行登月，部署 CMR 宇宙挖矿机器人采矿并上链出售 / Build a rocket, fly real orbits to the Moon, deploy the CMR rover to mine and sell lots on-chain",
   "lang": "zh-CN",
   "start_url": "./",
   "scope": "./",
@@ -9,10 +9,27 @@
   "orientation": "any",
   "background_color": "#05060f",
   "theme_color": "#05060f",
-  "categories": ["games"],
+  "categories": [
+    "games"
+  ],
   "icons": [
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }

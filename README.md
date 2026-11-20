@@ -1,99 +1,133 @@
-# 月球挖矿 Moon Miner 🚀🌕⛏️
+# 月球挖矿 Moon Miner · 星链挖矿版 🚀🌕⛏️
 
-> 发射火箭，把一台小挖掘机送上月球，平稳着陆，然后开着它挖矿赚钱、升级装备。
-> Launch a rocket, carry a little excavator to the Moon, land it softly, then drive it around to mine ore, earn credits and buy upgrades.
+> 用一枚现成的胶囊飞船飞到月球（机库改装是可选项），软着陆后驾驶圆形扁平的 CMR 扫地机式着陆器扫月壤。尘盒分成 3×3 格，每格拍一张照片并生成模拟 NFT，挂到游戏内市场出售，赚钱解锁更好的零件。链上市场是模拟的，不连接真实区块链，也不涉及真钱。
+> Fly a ready-made capsule spacecraft to the Moon (hangar building is optional). After a soft landing, drive the round, flat CMR vacuum-style lander to sweep regolith. The dust box is a 3×3 grid; each compartment is photographed and minted as a simulated NFT, then listed on the in-game market to fund upgrades. The market is simulated: there is no real blockchain and no real money.
 
-**▶ 在线试玩 / Play now: <https://yydemo.github.io/moon-miner/>**（手机、电脑浏览器都能玩 / works on phones and desktop browsers）
+**▶ 在线试玩 / Play now: <https://yydemo.github.io/moon-miner/>**（手机优先，电脑也能玩 / mobile-first, desktop works too）
 
 ![月球挖矿截图 / Moon Miner screenshot](docs/screenshot.png)
 
-## 简介 / Introduction
+## 设计依据 / Design basis
 
-- 单个 `index.html`，纯原生 JavaScript + Canvas，不需要构建，也不依赖任何外部库或 CDN。
-  A single `index.html` in vanilla JavaScript + Canvas: no build step, no external libraries or CDNs.
-- 所有画面（火箭、着陆器、挖掘机、月面、矿物）都由代码实时绘制，没有图片素材；音效由 WebAudio 实时合成。
-  Every visual (rocket, lander, excavator, terrain, ore) is drawn by code at runtime with no image assets; sound effects are synthesised with WebAudio.
-- 全部代码原创，没有使用、反编译或模仿任何其他游戏的代码和素材。
-  All code is original. No code or assets from any other game were used, decompiled or imitated.
-- 中英双语界面（右上角「EN / 中」切换，会记住你的选择）。
-  Bilingual Chinese / English UI (tap "EN / 中" at the top right; your choice is remembered).
-- 支持「添加到主屏幕」，离线也能玩（PWA）。
-  Can be added to the home screen and played offline (PWA).
+- 游戏的故事、资源、机器人参数、经济和阶段，按 [yydemo/star-chain-earn-mine](https://github.com/yydemo/star-chain-earn-mine) 的实际内容设计。每一项对应哪个源文件，见 [docs/DESIGN_MAPPING.md](docs/DESIGN_MAPPING.md)。
+  The story, resources, rover parameters, economy and stages follow the actual contents of [yydemo/star-chain-earn-mine](https://github.com/yydemo/star-chain-earn-mine). [docs/DESIGN_MAPPING.md](docs/DESIGN_MAPPING.md) lists the source file behind each choice.
+- 玩法参考 2D 火箭模拟器类游戏：零件拼装、分级、轨道、地图、时间加速。
+  The gameplay is in the style of 2D rocket simulators: part-based building, staging, orbits, a map view and time warp.
+- **代码和画面全部原创**：没有使用、反编译或引用任何其他游戏的代码或素材。所有图形都由 Canvas 代码绘制，音效由 WebAudio 合成。
+  **All code and art are original.** No code or assets from any other game were used, decompiled or referenced. All graphics are drawn by Canvas code and all sounds are synthesised with WebAudio.
+- 已做匿名化：游戏和文档里不出现真实机构名称、人名、专利号或软著号。
+  Anonymised: the game and docs contain no real institution names, personal names, or patent / software-copyright numbers.
 
-## 玩法 / How to play
+## 功能 / Features
 
-1. **发射 / Launch**：按住「点火」让火箭升空。一级燃料用完时「分离」按钮会闪烁，0.8 秒内点它可拿「完美分离」奖励（2 秒后会自动分离）。到达 120 km 进入地月转移。
-   Hold **Thrust** to lift off. When stage 1 runs dry the **Stage** button flashes; tap it within 0.8 s for a "perfect staging" bonus (it auto-stages after 2 s). Reach 120 km to start the trip to the Moon.
-2. **地月转移 / Transfer**：一段过场动画，可点「跳过」。
-   A short cutscene you can skip.
-3. **着陆 / Landing**：用 ◀ ▶ 调整姿态、「点火」减速。触地时下降速度 < 3 m/s、水平速度 < 2.5 m/s、倾角 < 15° 才算成功。落在绿灯着陆场上、或者轻柔着陆（< 1 m/s）还有额外奖励。坠毁可免费重试着陆。
-   Tilt with ◀ ▶ and fire **Thrust** to slow down. Touch down with descent < 3 m/s, drift < 2.5 m/s and tilt < 15°. Landing on the green-lit pad or touching down below 1 m/s earns extra. A crash lets you retry the landing for free.
-4. **采矿 / Mining**：驾驶「小矿工挖掘机」：◀ ▶ 行驶，▼ 向下挖，顶着墙走会横向挖，碰到一格高的台阶会自动爬上去，▲ 推进器往上飞。货舱装满后回到着陆器，自动卸货换钱并充电。电量耗尽会丢失舱内货物。回到着陆器旁点「结束」完成任务。
-   Drive the **Little Digger**: ◀ ▶ to drive, ▼ to dig down, push into a wall to dig sideways (it climbs one-tile steps by itself), ▲ fires the jet. When the cargo bay is full, return to the lander to sell the ore and recharge. If the battery dies, the cargo on board is lost. Tap **End** next to the lander to finish the mission.
-5. **升级 / Upgrades**：在商店用资金升级钻头、货舱、燃料箱、发动机、电池（每项 5 级）。资金、最高分、升级和成就都保存在本机浏览器里（localStorage）。
-   Spend credits on the drill, cargo bay, fuel tanks, engine and battery (5 levels each). Credits, high score, upgrades and achievements are saved in your browser (localStorage).
+### 火箭组装 / Rocket builder
+- 飞船是胶囊外形（载人/货运返回舱），火箭只是运载工具。默认提供一枚能登月的现成火箭，机库改装是可选项。
+  The spacecraft is a crew/cargo capsule; the rocket is just the ride. A ready-made Moon-capable stack is the default; hangar building is optional.
+- 零件拼装：返回舱、CMR 载荷舱、整流罩、太阳能板、着陆腿、5 种储箱、6 种发动机、分离器。
+  Part-based builder: capsule, CMR payload bay, fairing, solar panel, landing legs, 5 tank sizes, 6 engines and decouplers.
+- 实时显示每级的质量、推力、海平面/真空 Δv 和起飞 TWR，并给出约 5,700 m/s 的登月 Δv 参考。
+  Live readout of each stage's mass, thrust, sea-level/vacuum Δv and lift-off TWR, against a reference of about 5,700 m/s to land on the Moon.
+- 显示 CMR 质量、能否放进 1/4 搭载位，以及按真实报价估算的发射费用。
+  Shows the CMR's mass, whether it fits a 1/4 rideshare plate, and a launch cost estimated from real quotes.
+- 自带一枚能登月的默认火箭。
+  Ships with a default rocket that can reach the Moon.
 
-### 矿物 / Resources
+### 飞行 / Flight
+- 二维轨道物理，1:10 缩小的地月系统（地球和月球的表面重力是真实的），带大气阻力。
+  2D orbital physics in a 1:10 Earth–Moon system (surface gravity is real), with atmospheric drag.
+- 圆锥曲线拼接：进入和离开月球引力范围（SOI）时自动切换参考天体。
+  Patched conics: the reference body switches automatically when you enter or leave the Moon's sphere of influence (SOI).
+- 多级分离；推力为 0 时可按开普勒轨道快速推进；时间加速最高 ×100000。
+  Multi-stage separation, Kepler "on-rails" propagation while coasting, and time warp up to ×100000.
+- 地图视图：显示远地点/近地点（Ap/Pe）、月球轨道、SOI、预测轨迹、相遇时的月球位置和撞击点。
+  Map view with Ap/Pe, the Moon's orbit, its SOI, the predicted trajectory, the Moon's position at encounter and the impact point.
+- 自动驾驶辅助：入轨 → 地月转移 → 滑行 → 月球捕获 → 离轨 → 动力下降 → 着陆。
+  Autopilot assist: ascent → trans-lunar injection → coast → lunar capture → deorbit → powered descent → landing.
+- SAS 姿态模式：保持、顺行、逆行。
+  SAS attitude modes: hold, prograde, retrograde.
 
-| 矿物 Resource | 售价 Value | 出现深度 Depth | 说明 Notes |
-|---|---|---|---|
-| 月壤 Regolith | 0 | 表层 surface | 好挖，不占货舱 / soft, not collected |
-| 玄武岩 Basalt | 0 | 越深越多 more at depth | 比较硬 / harder |
-| 水冰 Water ice | 15 | ≥ 1 m | |
-| 铁矿 Iron | 25 | ≥ 6 m | |
-| 钛铁矿 Titanium | 60 | ≥ 20 m | 很硬 / very hard |
-| 氦-3 Helium-3 | 200 | ≥ 34 m | 稀有 / rare |
-| 基岩 Bedrock | — | 边界 edges | 挖不动 / undiggable |
+### 月面采矿 / Lunar mining
+- 着陆器做成圆形扁平的扫地机模样（原创造型，没有商标）。
+  The lander is shaped like a round, flat robot vacuum (original art, no trademarks).
+- CMR 机器人的电池、太阳能（昼夜循环）、12 kg 集尘盒，以及 AI 识别（置信度 ≥ 0.90），参数取自源仓库。
+  The CMR rover's battery, solar power (with a day/night cycle), 12 kg dust box and AI classification (confidence ≥ 0.90) use the source repo's parameters.
+- 5 种材料：稀土、金属、硅酸盐、水冰、有机物，价格取自源仓库。
+  5 materials (rare earth, metallic, silicate, water ice, organic), priced from the source repo.
+- 尘盒分成 3×3 格。每格拍一张带坐标、时刻、质量、成分和哈希的照片，再生成模拟 NFT（编号来自照片与元数据的 SHA-256），挂到游戏内市场，由模拟买家出价。
+  The dust box is a 3×3 grid. Each compartment gets a photo card (site, time, mass, composition, hash) and is minted as a simulated NFT (token id from SHA-256 of the photo and metadata), then listed on the in-game market where simulated buyers bid.
+- 只有中继卫星在线、机器人回到月面时才能成交。账本仍使用 SHA-256 简化工作量证明。市场是模拟的，不连接真实区块链，也不涉及真钱。
+  Sales settle only while a relay satellite is online and the rover is back on the surface. The ledger still uses SHA-256 "PoW-lite". The market is simulated: no real blockchain and no real money.
+- 结算页会校验账本完整性。
+  The results screen verifies ledger integrity.
+- 用里程碑奖金和销售收入升级 CMR，或解锁更大的储箱、发动机和着陆腿。
+  Spend milestone bonuses and sales income on CMR upgrades, or unlock bigger tanks, engines and landing legs.
 
-### 成就 / Achievements
-
-点火升空 Liftoff · 完美分离 Clean Staging · 鹰已着陆 The Eagle Has Landed · 羽毛落地 Feather Touch · 精准着陆 Bullseye · 未来能源 Future Fuel · 深层勘探 Deep Survey · 月球富翁 Moon Tycoon · 顶级装备 Top Gear · 老练宇航员 Veteran
+### 通用 / General
+- 中英双语界面：右上角「EN / 中」切换。
+  Bilingual Chinese / English UI: tap "EN / 中" at the top right to switch.
+- PWA：可以添加到主屏幕，离线也能玩。
+  PWA: add it to the home screen and play offline.
+- 存档会自动从旧版迁移。
+  Saves migrate automatically from the old version.
+- 不需要构建，也不依赖外部库。
+  No build step and no external libraries.
 
 ## 操作 / Controls
 
-| 动作 Action | 手机 Touch | 键盘 Keyboard |
+| 功能 / Action | 触屏 / Touch | 键盘 / Keyboard |
 |---|---|---|
-| 点火 / 推进 Thrust / jet | 🔥 / ▲ 按钮 button | 空格 Space、↑、W |
-| 级间分离 Stage separation | ⇋ 按钮 button | ↓、S、Enter |
-| 左右（转向 / 行驶）Left / right (tilt / drive) | ◀ ▶ | ← →、A D |
-| 挖掘 Dig down | ▼ | ↓、S |
-| 暂停 Pause | ⏸ | P、Esc |
-| 静音 Mute | 🔊 | M |
+| 左转 / 右转 · Rotate | 左转 / 右转按钮 · rotate buttons | A / D，← / → |
+| 油门 · Throttle | 右侧滑条、「满」/「关」 · slider, Full / Cut | W / S 增减 · up / down，Z 满 · full，X 关 · cut |
+| 分级 / 点火 · Stage / ignite | 「分级」大按钮 · big STAGE button | 空格 / 回车 · Space / Enter |
+| 地图 · Map | 「地图」 · Map | M |
+| 时间加速 · Time warp | ⏪ / ⏩ | `,` / `.` |
+| SAS 姿态 · SAS mode | 「保持」按钮循环 · cycles Hold | T |
+| 自动驾驶 · Autopilot | 「自动驾驶」 · Autopilot | — |
+| 缩放 · Zoom | 双指捏合 · pinch | 鼠标滚轮 · mouse wheel |
+| 采矿 · Mine | 方向按钮，按住「下」向下挖 · arrow buttons, hold ↓ to dig down | 方向键 / WASD · arrow keys / WASD |
+| 拍照铸造 · Photo & mint | 「拍照铸造」/「模拟市场」 · Photo & mint / Market | E |
+| 暂停 / 静音 · Pause / Mute | 右上角按钮 · top-right buttons | P 或 Esc · P or Esc / N |
 
-触屏按键支持多点触控，可以同时按住方向和点火；页面不会被拖动或缩放；适配刘海屏安全区，横屏竖屏都能玩；切到后台自动暂停。
-Touch buttons are multi-touch, so you can hold a direction and thrust together. The page never scrolls or zooms, respects notch safe areas, works in portrait and landscape, and pauses automatically when the tab is hidden.
+## 玩法流程 / How to play
+
+1. **出发 / Launch**：默认已装好一枚现成火箭。想改装就在机库里点零件（插到选中零件上方），看 Δv 和 TWR，确认没有报错后点「发射」。
+   A ready-made rocket is already loaded. To rebuild, tap parts in the hangar (inserted above the selected one), check Δv and TWR, then tap **Launch**.
+2. **入轨 / Orbit**：按「分级」点火，转向东飞出大气层，把轨道抬到约 52 km（真实的 525 km 太阳同步轨道 ÷ 10）。
+   Press **STAGE** to ignite, pitch east out of the atmosphere and raise the orbit to about 52 km (the real 525 km sun-synchronous orbit ÷ 10).
+3. **奔月 / To the Moon**：在相位窗口顺行加速，直到地图上出现月球相遇点，然后时间加速滑行。
+   Burn prograde in the phase window until the map shows a Moon encounter, then time-warp through the coast.
+4. **着陆 / Land**：在近月点逆行减速，然后动力下降。触地速度要小于着陆腿的承受值，并且保持竖直。
+   Burn retrograde at periapsis, then make a powered descent. Touch down slower than your legs can take, and keep upright.
+5. **采矿 / Mine**：点「部署 CMR」。扫挖月壤，看好电量（夜间太阳能很弱）。尘盒每格拍一张照片，点「拍照铸造」生成模拟 NFT，回到月面后在模拟市场卖掉。
+   Tap **Deploy CMR**. Sweep and dig, and watch your battery (solar is weak at night). Each dust-box cell is photographed; tap **Photo & mint** to create a simulated NFT, then sell it on the in-game market once you are back on the surface.
+6. **升级 / Upgrade**：用资金升级 CMR，或解锁更强的零件。
+   Spend your funds on CMR upgrades or stronger parts.
+
+## 文件 / Files
+
+| 文件 / File | 内容 / Contents |
+|---|---|
+| `index.html` | 界面与样式 · UI markup and styles |
+| `js/data.js` | 零件、天体、材料、机器人、里程碑数据（带来源注释） · parts, bodies, materials, rover and milestone data with source notes |
+| `js/i18n.js` | 中英文本 · zh/en strings |
+| `js/core.js` | 存档与迁移、输入、音效、通用绘图 · saves and migration, input, audio, shared drawing |
+| `js/orbit.js` | 轨道根数、开普勒求解、轨迹预测 · orbital elements, Kepler solver, trajectory prediction |
+| `js/vessel.js` | 分级与 Δv 计算、零件绘制 · staging and Δv maths, part art |
+| `js/flight.js` | 飞行物理、自动驾驶、飞行视图与地图 · flight physics, autopilot, flight and map views |
+| `js/mining.js` | 月面采矿、尘盒格子、模拟 NFT 市场、中继、账本 · lunar mining, dust-box grid, simulated NFT market, relay, ledger |
+| `js/builder.js` | 机库与 CMR 商店 · hangar and CMR shop |
+| `js/main.js` | 主循环、HUD、界面流程 · main loop, HUD, screen flow |
+| `sw.js` | 离线缓存 · offline cache |
 
 ## 本地运行 / Run locally
 
 ```bash
-git clone https://github.com/yydemo/moon-miner.git
-cd moon-miner
-python3 -m http.server 8000
-# 打开 / open http://localhost:8000
+python3 -m http.server 8000   # 打开 / open http://localhost:8000/
 ```
 
-直接双击打开 `index.html` 也能玩，只是离线缓存（Service Worker）需要通过 http(s) 访问才会生效。
-Opening `index.html` directly also works; only the offline cache (service worker) needs http(s).
+## 说明 / Notes
 
-## 自定义 / Customising
-
-- 挖掘机名字在 `index.html` 顶部的 `DIGGER_NAME` 常量里，改一处全局生效；游戏名在 `GAME_NAME`。
-  The excavator's name is the `DIGGER_NAME` constant at the top of the script in `index.html`; change it once and it updates everywhere. The game name is `GAME_NAME`.
-- 所有界面文字都在 `I18N` 表里（另有 `ORE_NAMES`、`UPGRADE_TEXT`、`ACH_TEXT`）。
-  All UI strings live in the `I18N` table (plus `ORE_NAMES`, `UPGRADE_TEXT` and `ACH_TEXT`).
-- 修改游戏文件后，把 `sw.js` 里的 `CACHE` 版本号加一，已安装的玩家才会拿到新版本。
-  After changing game files, bump the `CACHE` version in `sw.js` so installed players get the update.
-
-## 文件 / Files
-
-| 文件 File | 说明 Description |
-|---|---|
-| `index.html` | 游戏本体（HTML + CSS + JS）/ the whole game |
-| `manifest.json` | PWA 清单 / web app manifest |
-| `sw.js` | 离线缓存 / offline cache service worker |
-| `icon.svg`, `icon-192.png`, `icon-512.png` | 图标（原创矢量，PNG 由 SVG 渲染）/ icons (original vector; PNGs rendered from the SVG) |
-| `docs/screenshot.png` | 截图 / screenshot |
-
-## 许可证 / License
-
-[MIT](LICENSE)
+- 世界按 1:10 缩小，方便在手机上玩；采矿收益里有一个 ×10 的“太空稀缺溢价”，这是游戏假设，不是源仓库的数据。
+  The world is scaled 1:10 so it plays well on phones. Mining income includes a ×10 "space scarcity premium", which is a game assumption and not source-repo data.
+- 源仓库里的火星任务、样品返回和小行星内容暂未做进游戏。
+  The source repo's Mars mission, sample return and asteroid content are not in the game yet.

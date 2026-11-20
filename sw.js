@@ -1,8 +1,9 @@
 // 月球挖矿离线缓存 Service Worker / Moon Miner offline-cache service worker
 // 修改游戏文件后请把版本号加一，玩家会自动拿到新版本。
 // Bump the version after changing game files so players receive the update.
-const CACHE = 'moon-miner-v1';
-const FILES = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png'];
+const CACHE = 'moon-miner-v3-capsule-nft-1';
+const FILES = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png',
+  './js/data.js', './js/i18n.js', './js/core.js', './js/orbit.js', './js/vessel.js', './js/flight.js', './js/mining.js', './js/builder.js', './js/main.js'];
 
 // 安装：预缓存全部文件 / install: pre-cache every file
 self.addEventListener('install', e => {
